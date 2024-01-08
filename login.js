@@ -16,7 +16,7 @@ router.post('/login', (req, res) => {
         if (data.length > 0) {
             return res.json("Login Successfully");
         } else {
-            return res.json("No record found");
+            return res.status(401).json({ message: "No record found" });
         }
     });
 });
