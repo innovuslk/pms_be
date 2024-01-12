@@ -5,7 +5,7 @@ const connection = require('./database/connect');
 const router = express.Router();
 
 router.post('/login', (req, res) => {
-    const sql = "SELECT * FROM users WHERE username = ? AND password = ?";
+    const sql = "SELECT * FROM user WHERE username = ? AND password = ?";
     const values = [
         req.body.username,
         req.body.password
