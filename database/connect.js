@@ -33,6 +33,10 @@ connection.connect((err) => {
                 INDEX idx_userid (userid),
                 FOREIGN KEY (userlevelId) REFERENCES user_level(id)
             );`,
+            `CREATE TABLE IF NOT EXISTS shift (
+                ShiftID VARCHAR(20) not null primary key,
+                TimeRange VARCHAR(50) not null
+            )`,
             `CREATE TABLE IF NOT EXISTS dailyPlan (
                 id INT PRIMARY KEY,
                 date DATE NOT NULL,
@@ -50,8 +54,10 @@ connection.connect((err) => {
                 lineNo INT NOT NULL,
                 plantName VARCHAR(255) NOT NULL,
                 userid INT NOT NULL,
+                Shift VARCHAR(20),
                 operation VARCHAR(255) NOT NULL,
-                FOREIGN KEY (userid) REFERENCES User(userid)
+                FOREIGN KEY (userid) REFERENCES User(userid),
+                FOREIGN KEY (Shift) REFERENCES shift(ShiftID)
             );`,
             `CREATE TABLE IF NOT EXISTS pieceCount (
                 id VARCHAR(255) PRIMARY KEY,

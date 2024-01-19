@@ -44,27 +44,8 @@ router.post('/setPieceCount', async (req, res) => {
         const lineItem = dailyPlanResult[0].lineItem;
         const quantity = dailyPlanResult[0].quantity;
 
-        let updatedPieceCount;  
 
-        const existingRecordQuery = `
-            SELECT id, pieceCount
-            FROM pieceCount
-            WHERE userid = ? AND timestamp >= ? AND timestamp < DATE_ADD(?, INTERVAL 1 DAY)
-            ORDER BY timestamp DESC
-            LIMIT 1;
-        `;
-        const existingRecordValues = [userId, current_date, current_date];
-        const existingRecordResult = await queryPromise(existingRecordQuery, existingRecordValues);
 
-        if (existingRecordResult.length > 0) {
-            // Update the existing record
-            const existingPieceCount = existingRecordResult[0].pieceCount;
-            updatedPieceCount = Number(existingPieceCount) + Number(pieceCount);
-
-            const updatePieceCountQuery = "UPDATE pieceCount SET pieceCount = ? WHERE id = ?";
-            const updatePieceCountValues = [updatedPieceCount, existingRecordResult[0].id];
-            await queryPromise(updatePieceCountQuery, updatePieceCountValues);
-        } else {
             // Insert a new record
             const operatorAssignmentQuery = "SELECT operation, plantName FROM operatorDailyAssignment WHERE userid = ?";
             const operatorAssignmentValues = [userId];
@@ -81,29 +62,7 @@ router.post('/setPieceCount', async (req, res) => {
             const insertPieceCountQuery = "INSERT INTO pieceCount (id, userid, timestamp, salesOrder, lineItem, operation, plantName, pieceCount) VALUES (?, ?, NOW(), ?, ?, ?, ?, ?)";
             const insertPieceCountValues = [uniqueId, userId, salesOrder, lineItem, operation, plantName, pieceCount];
             await queryPromise(insertPieceCountQuery, insertPieceCountValues);
-        }
 
-        // Query the latest piece count for the user
-        const latestPieceCountQuery = `
-            SELECT pieceCount
-            FROM pieceCount
-            WHERE userid = ?
-            ORDER BY timestamp DESC
-            LIMIT 1;
-        `;
-        const latestPieceCountValues = [userId];
-        const latestPieceCountResult = await queryPromise(latestPieceCountQuery, latestPieceCountValues);
-        
-        if (latestPieceCountResult.length > 0) {
-            const latestPieceCount = latestPieceCountResult[0].pieceCount;
-            // Respond with success and the latest piece count
-            res.status(200).json({ message: 'Piece count updated successfully.',latestPieceCount: latestPieceCount});
-        } else {
-            const latestPieceCount = updatedPieceCount
-            res.status(200).json({ message: 'Piece count updated successfully.', latestPieceCount: latestPieceCount });
-        }
-        
-        console.log(updatedPieceCount);
     } catch (error) {
         console.error(error);
         res.status(500).send('Error updating piece Count');

@@ -54,7 +54,7 @@ router.post('/getInfo', async (req, res) => {
         const { lineNo, plantName } = assignmentResult[0];
 
         // Send the response with plantName and lineNo
-        res.json({ plantName, lineNo });
+        res.json({ plantName, lineNo, decodedUsername });
     } catch (error) {
         console.error('Error:', error);
         res.status(500).send('Internal Server Error');
