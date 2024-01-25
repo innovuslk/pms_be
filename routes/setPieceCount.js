@@ -9,6 +9,8 @@ router.post('/setPieceCount', async (req, res) => {
     try {
         const decodedUsername = base64.decode(req.body.username);
         const pieceCount = Number(req.body.pieceCount);
+        const hour = req.body.hour;
+        const shift = req.body.shift;
 
         // Get user ID
         const userQuery = "SELECT userid FROM user WHERE username = ?";
@@ -29,7 +31,7 @@ router.post('/setPieceCount', async (req, res) => {
 
         // Retrieve sales orders, line items, and quantities for the current date
         const dailyPlanQuery = `
-            SELECT salesOrder, lineItem, quantity
+            SELECT salesOrder, lineItem, dailyTarget
             FROM dailyPlan
             WHERE date = ?;
         `;
@@ -47,7 +49,7 @@ router.post('/setPieceCount', async (req, res) => {
 
 
             // Insert a new record
-            const operatorAssignmentQuery = "SELECT operation, plantName FROM operatorDailyAssignment WHERE userid = ?";
+            const operatorAssignmentQuery = "SELECT operation, lineNo, plantName FROM operatorDailyAssignment WHERE userid = ?";
             const operatorAssignmentValues = [userId];
             const operatorAssignmentResult = await queryPromise(operatorAssignmentQuery, operatorAssignmentValues);
 
@@ -57,10 +59,11 @@ router.post('/setPieceCount', async (req, res) => {
 
             const operation = operatorAssignmentResult[0].operation;
             const plantName = operatorAssignmentResult[0].plantName;
+            const lineNo = operatorAssignmentResult[0].lineNo;
             const uniqueId = shortid.generate();
 
-            const insertPieceCountQuery = "INSERT INTO pieceCount (id, userid, timestamp, salesOrder, lineItem, operation, plantName, pieceCount) VALUES (?, ?, NOW(), ?, ?, ?, ?, ?)";
-            const insertPieceCountValues = [uniqueId, userId, salesOrder, lineItem, operation, plantName, pieceCount];
+            const insertPieceCountQuery = "INSERT INTO pieceCount (id, userid, timestamp, salesOrder, lineItem, operation, plantName, pieceCount, shift, hour, lineNo) VALUES (?, ?, NOW(), ?, ?, ?, ?, ?, ?, ?, ?)";
+            const insertPieceCountValues = [uniqueId, userId, salesOrder, lineItem, operation, plantName, pieceCount, shift, hour, lineNo];
             await queryPromise(insertPieceCountQuery, insertPieceCountValues);
 
     } catch (error) {

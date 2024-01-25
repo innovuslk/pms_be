@@ -35,7 +35,9 @@ connection.connect((err) => {
             );`,
             `CREATE TABLE IF NOT EXISTS shift (
                 ShiftID VARCHAR(20) not null primary key,
-                TimeRange VARCHAR(50) not null
+                startTime VARCHAR(50) not null,
+                endTime VARCHAR(50) not null,
+                NoOfHours INT not null
             )`,
             `CREATE TABLE IF NOT EXISTS dailyPlan (
                 id INT PRIMARY KEY,
@@ -45,7 +47,7 @@ connection.connect((err) => {
                 lineItem VARCHAR(255) NOT NULL,
                 lineNo INT NOT NULL,
                 plantName VARCHAR(255) NOT NULL,
-                quantity INT NOT NULL
+                dailyTarget INT NOT NULL
             );`,
             `CREATE TABLE IF NOT EXISTS operatorDailyAssignment (
                 id INT PRIMARY KEY,
@@ -68,6 +70,9 @@ connection.connect((err) => {
                 operation VARCHAR(255) NOT NULL,
                 plantName VARCHAR(50) NOT NULL,
                 pieceCount VARCHAR(50),
+                shift VARCHAR(20),
+                hour VARCHAR(20),
+                lineNo VARCHAR(20),
                 FOREIGN KEY (userid) REFERENCES User(userid)
             );`
         ];

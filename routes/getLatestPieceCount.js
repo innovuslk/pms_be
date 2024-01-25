@@ -19,14 +19,15 @@ router.post('/getPieceCount', async (req, res) => {
         const userId = userResult[0].userid;
 
         // Get the sum of piece counts for the user
-        const totalPieceCountQuery = "SELECT SUM(pieceCount) as totalPieceCount FROM pieceCount WHERE userid = ?";
+        const totalPieceCountQuery = "SELECT SUM(pieceCount) as totalPieceCount, MAX(hour) as latestHour FROM pieceCount WHERE userid = ?";
         const totalPieceCountValues = [userId];
         const totalPieceCountResult = await queryPromise(totalPieceCountQuery, totalPieceCountValues);
 
         if (totalPieceCountResult.length > 0) {
             const totalPieceCount = totalPieceCountResult[0].totalPieceCount;
-            // Respond with success and the total piece count
-            res.status(200).json({ message: 'Total piece count retrieved successfully.', totalPieceCount: totalPieceCount });
+            const latestHour = totalPieceCountResult[0].latestHour;
+            // Respond with success and the total piece count and latest hour
+            res.status(200).json({ message: 'Total piece count retrieved successfully.', totalPieceCount: totalPieceCount, latestHour: latestHour });
         } else {
             res.status(200).json({ message: 'No piece counts found for the user.', totalPieceCount: 0 });
         }
