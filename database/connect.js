@@ -58,6 +58,7 @@ connection.connect((err) => {
                 userid INT NOT NULL,
                 Shift VARCHAR(20),
                 operation VARCHAR(255) NOT NULL,
+                svm INT NOT NULL,
                 FOREIGN KEY (userid) REFERENCES User(userid),
                 FOREIGN KEY (Shift) REFERENCES shift(ShiftID)
             );`,

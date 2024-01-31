@@ -8,6 +8,10 @@ const getPieceCount = require('./routes/getLatestPieceCount');
 const UserRegister = require('./routes/userRegister');
 const getShift = require('./routes/getShift');
 const getHoursInShift = require('./routes/getHoursInShift');
+const getLineEndPieceCount = require('./routes/getLineEndPieceCount');
+const getDataForBarChart = require('./routes/getDataForBarChart');
+const getSvm = require('./routes/getSvm');
+
 const app = express();
 
 app.use(cors());
@@ -21,6 +25,9 @@ app.use('/set',setPieceCount)
 app.use('/set',getPieceCount)
 app.use('/get',getShift)
 app.use('/get',getHoursInShift)
+app.use('/get',getLineEndPieceCount)
+app.use('/get',getDataForBarChart)
+app.use('/get',getSvm);
 
 const port = 5000;
 app.listen(port, () => {
