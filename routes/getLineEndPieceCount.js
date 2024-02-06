@@ -7,10 +7,16 @@ router.post('/getLineEndPieceCount', async (req, res) => {
     try {
 
         const operation = req.body.operation
+
+        let date_time = new Date();
+        let month = ("0" + (date_time.getMonth() + 1)).slice(-2);
+        let year = date_time.getFullYear();
+        let date = ("0" + date_time.getDate()).slice(-2);
+        let current_date = `${year}-${month}-${date} `;
         
         // Get the sum of piece counts for the user
-        const totalLineEndPieceCountQuery = "SELECT SUM(pieceCount) as totalLineEndPieceCount FROM pieceCount WHERE operation = ?";
-        const totalLineEndPieceCountValues = [operation];
+        const totalLineEndPieceCountQuery = "SELECT SUM(pieceCount) as totalLineEndPieceCount FROM pieceCount WHERE operation = ? AND DATE(timestamp) = ?";
+        const totalLineEndPieceCountValues = [operation, current_date];
         const totalLineEndPieceCountResult = await queryPromise(totalLineEndPieceCountQuery, totalLineEndPieceCountValues);
 
         if (totalLineEndPieceCountResult.length > 0) {

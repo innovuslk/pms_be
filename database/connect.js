@@ -75,6 +75,14 @@ connection.connect((err) => {
                 hour VARCHAR(20),
                 lineNo VARCHAR(20),
                 FOREIGN KEY (userid) REFERENCES User(userid)
+            );`,
+            `CREATE TABLE IF NOT EXISTS downtime (
+                id VARCHAR(255) not null primary key,
+                userid INT not null,
+                downTime VARCHAR(50) not null,
+                type VARCHAR(255) not null,
+                startTime TIMESTAMP,
+                endTime TIMESTAMP
             );`
         ];
 

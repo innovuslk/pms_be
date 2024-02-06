@@ -1,12 +1,17 @@
 const express = require('express');
 const connection = require('../database/connect');
 const base64 = require('base-64');
+const shortid = require('shortid');
 
 const router = express.Router();
 
-router.post('/getsmv', async (req, res) => {
+router.post('/downTime', async (req, res) => {
     try {
-        const decodedUsername = base64.decode(req.body.username);
+        console.log(req.body)
+        const decodedUsername = atob(req.body.username);
+        const downTime = req.body.downTime;
+        const type = req.body.type;
+        const startTime = req.body.startTime;
 
         const userQuery = "SELECT userid FROM user WHERE username = ?";
         const userValues = [decodedUsername];
@@ -17,26 +22,20 @@ router.post('/getsmv', async (req, res) => {
         }
 
         const userId = userResult[0].userid;
+        const uniqueId = shortid.generate();
 
-        // Get the sum of piece counts for the user
-        const smv = "SELECT smv FROM operatordailyassignment WHERE userid = ?";
-        const smvValues = [userId];
-        const smvResults = await queryPromise(smv, smvValues);
+        const insertDowntimeQuery = "INSERT INTO downtime (id, userid,downTime,type,startTime ) VALUES (?, ?, ?, ?, ?)";
+        const insertDowntimeValues = [uniqueId, userId, '0', type, startTime ];
+        await queryPromise(insertDowntimeQuery, insertDowntimeValues);
 
-        if (smvResults.length > 0) {
-            const smv = smvResults[0].smv;
-            // Respond with success and the total piece count
-            res.status(200).json({ message: 'smv recieved successfully.', smv: smv });
-        } else {
-            res.status(200).json({ message: 'No smv recieved.', smv: 0 });
-        }
-    } catch (error) {
-        console.error(error);
-        res.status(500).send('Error retrieving smv');
+
     }
+    catch (error) {
+        console.error(error);
+        res.status(500).send('Error updating piece Count');
+    }
+})
 
-}
-)
 function queryPromise(query, values) {
     return new Promise((resolve, reject) => {
         connection.query(query, values, (err, data) => {

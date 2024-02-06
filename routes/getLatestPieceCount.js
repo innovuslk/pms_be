@@ -6,7 +6,7 @@ const router = express.Router();
 
 router.post('/getPieceCount', async (req, res) => {
     try {
-        const decodedUsername = base64.decode(req.body.username);
+        const decodedUsername = atob(req.body.username);
 
         const userQuery = "SELECT userid FROM user WHERE username = ?";
         const userValues = [decodedUsername];
@@ -18,9 +18,15 @@ router.post('/getPieceCount', async (req, res) => {
 
         const userId = userResult[0].userid;
 
+        let date_time = new Date();
+        let month = ("0" + (date_time.getMonth() + 1)).slice(-2);
+        let year = date_time.getFullYear();
+        let date = ("0" + date_time.getDate()).slice(-2);
+        let current_date = `${year}-${month}-${date} `;
+
         // Get the sum of piece counts for the user
-        const totalPieceCountQuery = "SELECT SUM(pieceCount) as totalPieceCount, MAX(hour) as latestHour FROM pieceCount WHERE userid = ?";
-        const totalPieceCountValues = [userId];
+        const totalPieceCountQuery = "SELECT SUM(pieceCount) as totalPieceCount, MAX(hour) as latestHour FROM pieceCount WHERE userid = ? AND DATE(timestamp) = ?";
+        const totalPieceCountValues = [userId , current_date];
         const totalPieceCountResult = await queryPromise(totalPieceCountQuery, totalPieceCountValues);
 
         if (totalPieceCountResult.length > 0) {

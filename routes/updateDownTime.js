@@ -1,12 +1,13 @@
 const express = require('express');
 const connection = require('../database/connect');
-const base64 = require('base-64');
-
 const router = express.Router();
 
-router.post('/getsmv', async (req, res) => {
+router.post('/updateEndTime', async (req, res) => {
     try {
-        const decodedUsername = base64.decode(req.body.username);
+        console.log(req.body)
+        const decodedUsername = atob(req.body.username);
+        const endTime = req.body.endTime;
+        const type = req.body.type;
 
         const userQuery = "SELECT userid FROM user WHERE username = ?";
         const userValues = [decodedUsername];
@@ -18,25 +19,17 @@ router.post('/getsmv', async (req, res) => {
 
         const userId = userResult[0].userid;
 
-        // Get the sum of piece counts for the user
-        const smv = "SELECT smv FROM operatordailyassignment WHERE userid = ?";
-        const smvValues = [userId];
-        const smvResults = await queryPromise(smv, smvValues);
+        const updateDowntimeQuery = "UPDATE downtime SET endTime = ? WHERE userid = ? AND type = ? AND endTime IS NULL ORDER BY startTime DESC LIMIT 1";
+        const updateDowntimeValues = [endTime, userId, type];
+        await queryPromise(updateDowntimeQuery, updateDowntimeValues);
 
-        if (smvResults.length > 0) {
-            const smv = smvResults[0].smv;
-            // Respond with success and the total piece count
-            res.status(200).json({ message: 'smv recieved successfully.', smv: smv });
-        } else {
-            res.status(200).json({ message: 'No smv recieved.', smv: 0 });
-        }
+        res.status(200).send('End time updated successfully');
     } catch (error) {
         console.error(error);
-        res.status(500).send('Error retrieving smv');
+        res.status(500).send('Error updating end time');
     }
+});
 
-}
-)
 function queryPromise(query, values) {
     return new Promise((resolve, reject) => {
         connection.query(query, values, (err, data) => {
