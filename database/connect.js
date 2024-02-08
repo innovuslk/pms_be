@@ -45,7 +45,7 @@ connection.connect((err) => {
                 sbu VARCHAR(50) NOT NULL,
                 salesOrder VARCHAR(255) NOT NULL,
                 lineItem VARCHAR(255) NOT NULL,
-                lineNo INT NOT NULL,
+                lineNo VARCHAR(50) NOT NULL,
                 plantName VARCHAR(255) NOT NULL,
                 dailyTarget INT NOT NULL
             );`,
@@ -53,7 +53,7 @@ connection.connect((err) => {
                 id INT PRIMARY KEY,
                 date DATE,
                 sbu VARCHAR(50) NOT NULL,
-                lineNo INT NOT NULL,
+                lineNo VARCHAR(50) NOT NULL,
                 plantName VARCHAR(255) NOT NULL,
                 userid INT NOT NULL,
                 Shift VARCHAR(20),

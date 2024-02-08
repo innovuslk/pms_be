@@ -4,7 +4,6 @@ const router = express.Router();
 
 router.post('/updateEndTime', async (req, res) => {
     try {
-        console.log(req.body)
         const decodedUsername = atob(req.body.username);
         const endTime = req.body.endTime;
         const type = req.body.type;

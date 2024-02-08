@@ -33,19 +33,42 @@ router.post('/getShiftHours', async (req, res) => {
 
 router.post('/getDailyTarget', async (req, res) => {
     try {
+        console.log(req.body)
+        const decodedUsername = base64.decode(req.body.username);
+
+        const userQuery = "SELECT userid FROM user WHERE username = ?";
+        const userValues = [decodedUsername];
+        const userResult = await queryPromise(userQuery, userValues);
+
+        if (userResult.length === 0) {
+            return res.status(404).send('User not found');
+        }
+
+        const userId = userResult[0].userid;
+
         let date_time = new Date();
         let month = ("0" + (date_time.getMonth() + 1)).slice(-2);
         let year = date_time.getFullYear();
         let date = ("0" + date_time.getDate()).slice(-2);
         let current_date = `${year}-${month}-${date} `;
 
+        const lineNoQuery = "SELECT lineNo from operatordailyassignment WHERE userid = ? AND date = ?";
+        const lineNoValues = [userId, current_date]
+        const lineNoResult = await queryPromise(lineNoQuery, lineNoValues);
+
+        if (!lineNoResult.length) {
+            return res.status(404).send("Line number not assigned for today");
+        }
+
+        const lineNumber = lineNoResult[0].lineNo;
+
         // Retrieve sales orders, line items, and quantities for the current date
         const dailyPlanQuery = `
             SELECT dailyTarget
             FROM dailyPlan
-            WHERE date = ?;
+            WHERE date = ? AND lineNo = ?;
         `;
-        const dailyPlanValues = [current_date];
+        const dailyPlanValues = [current_date, lineNumber];
         const dailyPlanResult = await queryPromise(dailyPlanQuery, dailyPlanValues);
 
         if (dailyPlanResult.length === 0) {
