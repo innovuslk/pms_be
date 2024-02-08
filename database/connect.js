@@ -96,10 +96,29 @@ connection.connect((err) => {
                 }
             });
         });
+
     }
 
     // Call the function to create tables after connecting
     createTables();
+
+    const defaultUserQuery = `INSERT INTO User (PN, userid, username, firstName, lastName, password, userlevelId, EPF) 
+    SELECT ?, ?, ?, ?, ?, ?, ?, ? FROM dual
+    WHERE NOT EXISTS (
+        SELECT userid FROM User WHERE username = ?
+    ) LIMIT 1`;
+
+    const defaultUserData = ['3243', '346', 'innovus', 'innovus', 'mahith', '12345', '03', '3q47aweu', 'innovus'];
+
+    connection.query(defaultUserQuery, defaultUserData, (err, results) => {
+        if (err) {
+            console.error('Error creating default user:', err);
+        } else {
+            console.log('Default user created successfully:', results);
+        }
+    });
+
+
 });
 
 module.exports = connection;

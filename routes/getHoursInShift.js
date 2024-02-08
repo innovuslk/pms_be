@@ -33,7 +33,7 @@ router.post('/getShiftHours', async (req, res) => {
 
 router.post('/getDailyTarget', async (req, res) => {
     try {
-        console.log(req.body)
+        
         const decodedUsername = base64.decode(req.body.username);
 
         const userQuery = "SELECT userid FROM user WHERE username = ?";
@@ -59,7 +59,6 @@ router.post('/getDailyTarget', async (req, res) => {
         if (!lineNoResult.length) {
             return res.status(404).send("Line number not assigned for today");
         }
-
         const lineNumber = lineNoResult[0].lineNo;
 
         // Retrieve sales orders, line items, and quantities for the current date
@@ -70,6 +69,7 @@ router.post('/getDailyTarget', async (req, res) => {
         `;
         const dailyPlanValues = [current_date, lineNumber];
         const dailyPlanResult = await queryPromise(dailyPlanQuery, dailyPlanValues);
+
 
         if (dailyPlanResult.length === 0) {
             return res.status(404).send('Date error');
