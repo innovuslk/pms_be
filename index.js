@@ -13,7 +13,7 @@ const getDataForBarChart = require('./routes/getDataForBarChart');
 const getSvm = require('./routes/getSvm');
 const downTime = require('./routes/sendDowntime')
 const updateEndTime = require('./routes/updateDownTime')
-
+const getTopUsers = require('./routes/topUsers')
 const app = express();
 
 app.use(cors());
@@ -32,6 +32,7 @@ app.use('/get',getDataForBarChart)
 app.use('/get',getSvm);
 app.use('/send',downTime)
 app.use('/update',updateEndTime)
+app.use('/get',getTopUsers);
 
 const port = 5000;
 app.listen(port, () => {
