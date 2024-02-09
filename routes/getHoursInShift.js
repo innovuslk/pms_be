@@ -8,7 +8,7 @@ router.post('/getShiftHours', async (req, res) => {
     try {
         const shiftID = req.body.shiftID;
 
-        const userQuery = "SELECT NoOfHours FROM shift WHERE shiftID = ?";
+        const userQuery = "SELECT NoOfHours FROM shift WHERE ShiftID = ?";
         const userValues = [shiftID];
         const userResult = await queryPromise(userQuery, userValues);
 
@@ -52,7 +52,7 @@ router.post('/getDailyTarget', async (req, res) => {
         let date = ("0" + date_time.getDate()).slice(-2);
         let current_date = `${year}-${month}-${date} `;
 
-        const lineNoQuery = "SELECT lineNo from operatordailyassignment WHERE userid = ? AND date = ?";
+        const lineNoQuery = "SELECT lineNo from operatorDailyAssignment WHERE userid = ? AND date = ?";
         const lineNoValues = [userId, current_date]
         const lineNoResult = await queryPromise(lineNoQuery, lineNoValues);
 
