@@ -8,7 +8,7 @@ router.post('/login', async (req, res) => {
     const username = req.body.username;
     const password = req.body.password;
 
-    const sql = "SELECT * FROM user WHERE username = ?";
+    const sql = "SELECT * FROM User WHERE username = ?";
     const values = [username];
 
     try {
