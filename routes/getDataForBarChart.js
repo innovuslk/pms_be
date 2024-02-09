@@ -17,7 +17,7 @@ router.post('/getDataForBarChart', async (req, res) => {
             return res.status(400).send('Invalid base64-encoded username');
         }
 
-        const userQuery = "SELECT userid FROM user WHERE username = ?";
+        const userQuery = "SELECT userid FROM User WHERE username = ?";
         const userValues = [decodedUsername];
         const userResult = await queryPromise(userQuery, userValues);
 

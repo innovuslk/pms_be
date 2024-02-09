@@ -10,7 +10,7 @@ router.post('/getInfo', async (req, res) => {
         const decodedUsername = base64.decode(req.body.username);
 
         // Get userId from user table based on the decoded username
-        const userQuery = "SELECT userid FROM user WHERE username = ?";
+        const userQuery = "SELECT userid FROM User WHERE username = ?";
         const userValues = [decodedUsername];
 
         console.log(decodedUsername);
