@@ -8,7 +8,7 @@ router.post('/updateEndTime', async (req, res) => {
         const endTime = req.body.endTime;
         const type = req.body.type;
 
-        const userQuery = "SELECT userid FROM user WHERE username = ?";
+        const userQuery = "SELECT userid FROM User WHERE username = ?";
         const userValues = [decodedUsername];
         const userResult = await queryPromise(userQuery, userValues);
 

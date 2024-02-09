@@ -13,7 +13,7 @@ router.post('/downTime', async (req, res) => {
         const type = req.body.type;
         const startTime = req.body.startTime;
 
-        const userQuery = "SELECT userid FROM user WHERE username = ?";
+        const userQuery = "SELECT userid FROM User WHERE username = ?";
         const userValues = [decodedUsername];
         const userResult = await queryPromise(userQuery, userValues);
 
