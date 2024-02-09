@@ -8,7 +8,7 @@ router.post('/getPieceCount', async (req, res) => {
     try {
         const decodedUsername = atob(req.body.username);
 
-        const userQuery = "SELECT userid FROM user WHERE username = ?";
+        const userQuery = "SELECT userid FROM User WHERE username = ?";
         const userValues = [decodedUsername];
         const userResult = await queryPromise(userQuery, userValues);
 
