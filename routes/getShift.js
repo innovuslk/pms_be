@@ -19,7 +19,7 @@ router.post('/getShift', async (req, res) => {
         const userId = userResult[0].userid;
 
         // Get the sum of piece counts for the user
-        const shift = "SELECT Shift FROM operatordailyassignment WHERE userid = ?";
+        const shift = "SELECT Shift FROM operatorDailyAssignment WHERE userid = ?";
         const shiftValues = [userId];
         const shiftResults = await queryPromise(shift, shiftValues);
 

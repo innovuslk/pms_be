@@ -19,7 +19,7 @@ router.post('/getsmv', async (req, res) => {
         const userId = userResult[0].userid;
 
         // Get the sum of piece counts for the user
-        const smv = "SELECT smv FROM operatordailyassignment WHERE userid = ?";
+        const smv = "SELECT smv FROM operatorDailyAssignment WHERE userid = ?";
         const smvValues = [userId];
         const smvResults = await queryPromise(smv, smvValues);
 

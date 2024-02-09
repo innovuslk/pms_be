@@ -32,7 +32,7 @@ router.post('/getInfo', async (req, res) => {
         const userId = userResult[0].userid;
 
         // Step 2: Get plantName and lineNo from operatordailyassignment using userId
-        const assignmentQuery = "SELECT lineNo, plantName FROM operatordailyassignment WHERE userid = ?";
+        const assignmentQuery = "SELECT lineNo, plantName FROM operatorDailyAssignment WHERE userid = ?";
         const assignmentValues = [userId];
 
         console.log(userId)
