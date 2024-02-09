@@ -13,7 +13,7 @@ router.post('/setPieceCount', async (req, res) => {
         const shift = req.body.shift;
 
         // Get user ID
-        const userQuery = "SELECT userid FROM user WHERE username = ?";
+        const userQuery = "SELECT userid FROM User WHERE username = ?";
         const userValues = [decodedUsername];
         const userResult = await queryPromise(userQuery, userValues);
 
