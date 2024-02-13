@@ -13,7 +13,7 @@ router.post('/register', async(req, res) => {
         firstName,
         lastName,
         password,
-        userLevel,
+        userlevel,
         EPF,
     } = req.body;
 
@@ -24,7 +24,7 @@ router.post('/register', async(req, res) => {
         VALUES (?, ?, ?, ?, ?, ?, ?, ?)
     `;
 
-    const values = [PN, userId, username, firstName, lastName, hashedPassword, userLevel, EPF];
+    const values = [PN, userId, username, firstName, lastName, hashedPassword, userlevel, EPF];
 
     connection.query(sql, values, (err, result) => {
         if (err) {
