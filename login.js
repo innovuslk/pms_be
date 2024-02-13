@@ -20,12 +20,13 @@ router.post('/login', async (req, res) => {
 
             if (data.length > 0) {
                 const hashedPassword = data[0].password;
+                const userLevel = data[0].userlevelId
 
                 // Compare the provided password with the stored hashed password
                 const passwordMatch = await bcrypt.compare(password, hashedPassword);
 
                 if (passwordMatch) {
-                    return res.json({ message: "Login successfully" });
+                    return res.json({ message: "Login successfully" , userLevel:userLevel});
                 } else {
                     return res.status(401).json({ message: "Incorrect password" });
                 }

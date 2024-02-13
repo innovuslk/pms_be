@@ -14,6 +14,8 @@ const getSvm = require('./routes/getSvm');
 const downTime = require('./routes/sendDowntime')
 const updateEndTime = require('./routes/updateDownTime')
 const getTopUsers = require('./routes/topUsers')
+const insertDailyPlan = require('./routes/insertDailyPlan')
+const insertOperator = require('./routes/insertOperator')
 const app = express();
 
 app.use(cors());
@@ -33,6 +35,8 @@ app.use('/get',getSvm);
 app.use('/send',downTime)
 app.use('/update',updateEndTime)
 app.use('/get',getTopUsers);
+app.use('/insert',insertDailyPlan);
+app.use('/insert',insertOperator);
 
 const port = 5000;
 app.listen(port, () => {
