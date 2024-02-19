@@ -60,5 +60,16 @@ router.post('/getInfo', async (req, res) => {
         res.status(500).send('Internal Server Error');
     }
 });
+router.post('/getAdminInfo', async (req, res) => {
+    try {
+        // Decode the provided username
+        const decodedUsername = base64.decode(req.body.username);
+
+        res.json({decodedUsername });
+    } catch (error) {
+        console.error('Error:', error);
+        res.status(500).send('Internal Server Error');
+    }
+});
 
 module.exports = router;

@@ -17,6 +17,7 @@ const getTopUsers = require('./routes/topUsers')
 const insertDailyPlan = require('./routes/insertDailyPlan')
 const insertOperator = require('./routes/insertOperator')
 const getPlantUsers = require('./routes/getPlantUsers')
+const getDowntimes = require('./routes/getDowntime')
 const app = express();
 
 app.use(cors());
@@ -39,6 +40,7 @@ app.use('/get',getTopUsers);
 app.use('/insert',insertDailyPlan);
 app.use('/insert',insertOperator);
 app.use('/get',getPlantUsers);
+app.use('/get',getDowntimes);
 
 const port = 5000;
 app.listen(port, () => {
