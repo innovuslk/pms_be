@@ -8,23 +8,23 @@ const router = express.Router();
 router.post('/register', async(req, res) => {
     const {
         PN,
-        userId,
         username,
         firstName,
         lastName,
         password,
         userlevel,
         EPF,
+        plantName
     } = req.body;
 
     const hashedPassword = await bcrypt.hash(password, 10);
 
     const sql = `
-        INSERT INTO User (PN, userid, username, firstName, lastName, password, userLevelId, EPF)
+        INSERT INTO User (PN, username, firstName, lastName, password, userLevelId, EPF, plantName)
         VALUES (?, ?, ?, ?, ?, ?, ?, ?)
     `;
 
-    const values = [PN, userId, username, firstName, lastName, hashedPassword, userlevel, EPF];
+    const values = [PN, username, firstName, lastName, hashedPassword, userlevel, EPF, plantName];
 
     connection.query(sql, values, (err, result) => {
         if (err) {

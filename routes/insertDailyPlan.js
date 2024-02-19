@@ -8,7 +8,6 @@ const router = express.Router();
 router.post('/insertDailyPlan', async(req, res) => {
     console.log(req.body)
     const {
-        ID,
         Date,
         Sbu,
         SalesOrder,
@@ -21,11 +20,11 @@ router.post('/insertDailyPlan', async(req, res) => {
 
 
     const sql = `
-        INSERT INTO dailyPlan (id, date, sbu, salesOrder, lineItem, lineNo, plantName, dailyTarget)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+        INSERT INTO dailyPlan (date, sbu, salesOrder, lineItem, lineNo, plantName, dailyTarget)
+        VALUES (?, ?, ?, ?, ?, ?, ?)
     `;
 
-    const values = [ID, Date, Sbu, SalesOrder, LineItem, LineNo, PlantName, DailyTarget];
+    const values = [Date, Sbu, SalesOrder, LineItem, LineNo, PlantName, DailyTarget];
 
     connection.query(sql, values, (err, result) => {
         if (err) {

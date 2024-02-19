@@ -21,15 +21,15 @@ connection.connect((err) => {
                 userlevel VARCHAR(255) NOT NULL
             );`,
             `CREATE TABLE IF NOT EXISTS User (
-                PN INT,
-                userid INT NOT NULL,
+                userid INT AUTO_INCREMENT PRIMARY KEY,
+                PN INT NOT NULL,
                 username VARCHAR(255) NOT NULL,
                 firstName VARCHAR(255) NOT NULL,
                 lastName VARCHAR(255) NOT NULL,
                 password VARCHAR(255) NOT NULL,
                 userlevelId INT,
                 EPF VARCHAR(255) NOT NULL,
-                PRIMARY KEY (PN, userid),
+                plantName VARCHAR(50),
                 INDEX idx_userid (userid),
                 FOREIGN KEY (userlevelId) REFERENCES user_level(id)
             );`,
@@ -40,7 +40,7 @@ connection.connect((err) => {
                 NoOfHours INT not null
             )`,
             `CREATE TABLE IF NOT EXISTS dailyPlan (
-                id INT PRIMARY KEY,
+                id INT AUTO_INCREMENT PRIMARY KEY,
                 date DATE NOT NULL,
                 sbu VARCHAR(50) NOT NULL,
                 salesOrder VARCHAR(255) NOT NULL,
@@ -50,7 +50,7 @@ connection.connect((err) => {
                 dailyTarget INT NOT NULL
             );`,
             `CREATE TABLE IF NOT EXISTS operatorDailyAssignment (
-                id INT PRIMARY KEY,
+                id INT AUTO_INCREMENT PRIMARY KEY,
                 date DATE,
                 sbu VARCHAR(50) NOT NULL,
                 lineNo VARCHAR(50) NOT NULL,
@@ -58,7 +58,7 @@ connection.connect((err) => {
                 userid INT NOT NULL,
                 Shift VARCHAR(20),
                 operation VARCHAR(255) NOT NULL,
-                svm INT NOT NULL,
+                smv INT NOT NULL,
                 FOREIGN KEY (userid) REFERENCES User(userid),
                 FOREIGN KEY (Shift) REFERENCES shift(ShiftID)
             );`,

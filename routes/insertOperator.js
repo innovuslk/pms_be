@@ -7,7 +7,6 @@ const router = express.Router();
 
 router.post('/insertOperator', async(req, res) => {
     const {
-        ID,
         Date,
         Sbu,
         LineNo,
@@ -20,11 +19,11 @@ router.post('/insertOperator', async(req, res) => {
 
 
     const sql = `
-        INSERT INTO operatorDailyAssignment (id, date, sbu, lineNo, plantName, userid, Shift, operation, smv)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+        INSERT INTO operatorDailyAssignment (date, sbu, lineNo, plantName, userid, Shift, operation, smv)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?)
     `;
 
-    const values = [ID, Date, Sbu, LineNo,PlantName, userId, Shift, operation, Smv];
+    const values = [Date, Sbu, LineNo,PlantName, userId, Shift, operation, Smv];
 
     connection.query(sql, values, (err, result) => {
         if (err) {
