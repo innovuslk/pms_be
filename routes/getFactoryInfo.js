@@ -31,9 +31,15 @@ router.post('/getInfo', async (req, res) => {
 
         const userId = userResult[0].userid;
 
+        let date_time = new Date();
+        let month = ("0" + (date_time.getMonth() + 1)).slice(-2);
+        let year = date_time.getFullYear();
+        let date = ("0" + date_time.getDate()).slice(-2);
+        let current_date = `${year}-${month}-${date} `;
+
         // Step 2: Get plantName and lineNo from operatordailyassignment using userId
-        const assignmentQuery = "SELECT lineNo, plantName FROM operatorDailyAssignment WHERE userid = ?";
-        const assignmentValues = [userId];
+        const assignmentQuery = "SELECT lineNo, plantName FROM operatorDailyAssignment WHERE userid = ? AND date = ?";
+        const assignmentValues = [userId, current_date];
 
         console.log(userId)
 

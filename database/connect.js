@@ -1,5 +1,6 @@
 const mysql = require('mysql');
 const config = require('../config/config');
+const bcrypt = require('bcrypt');
 
 const connection = mysql.createConnection({
     host: config.DB_HOST,
@@ -47,6 +48,7 @@ connection.connect((err) => {
                 lineItem VARCHAR(255) NOT NULL,
                 lineNo VARCHAR(50) NOT NULL,
                 plantName VARCHAR(255) NOT NULL,
+                style VARCHAR(50),
                 dailyTarget INT NOT NULL
             );`,
             `CREATE TABLE IF NOT EXISTS operatorDailyAssignment (
@@ -58,7 +60,7 @@ connection.connect((err) => {
                 userid INT NOT NULL,
                 Shift VARCHAR(20),
                 operation VARCHAR(255) NOT NULL,
-                smv INT NOT NULL,
+                smv FLOAT NOT NULL,
                 FOREIGN KEY (userid) REFERENCES User(userid),
                 FOREIGN KEY (Shift) REFERENCES shift(ShiftID)
             );`,
@@ -108,15 +110,46 @@ connection.connect((err) => {
         SELECT userid FROM User WHERE username = ?
     ) LIMIT 1`;
 
-    const defaultUserData = ['3243', '346', 'innovus', 'innovus', 'mahith', '12345', '03', '3q47aweu', 'innovus'];
+    const password = '12345';
+    bcrypt.hash(password, 10)
+        .then((hashedPassword) => {
+            const defaultUserData = ['3243', '346', 'innovus', 'innovus', 'mahith', hashedPassword, '01', '3q47aweu', 'innovus'];
 
-    connection.query(defaultUserQuery, defaultUserData, (err, results) => {
-        if (err) {
-            console.error('Error creating default user:', err);
-        } else {
-            console.log('Default user created successfully:', results);
-        }
-    });
+            connection.query(defaultUserQuery, defaultUserData, (err, results) => {
+                if (err) {
+                    console.error('Error creating default user:', err);
+                } else {
+                    console.log('Default user created successfully:', results);
+                }
+            });
+        })
+        .catch((err) => {
+            console.error('Error hashing password:', err);
+        });
+
+
+        const insertUserLevelsQuery = `INSERT INTO user_level (id, userlevel)
+        SELECT * FROM (SELECT ?, ?) AS tmp
+        WHERE NOT EXISTS (
+            SELECT id FROM user_level WHERE id = ?
+        ) LIMIT 1`;
+    
+        // Data for user_level table
+        const userLevelsData = [
+            [1, 'admin'],
+            [3, 'operator']
+        ];
+    
+        // Insert data into user_level table
+        userLevelsData.forEach((userData) => {
+            connection.query(insertUserLevelsQuery, [...userData, userData[0]], (err, results) => {
+                if (err) {
+                    console.error('Error inserting user level:', err);
+                } else {
+                    console.log('User level inserted successfully:', results);
+                }
+            });
+        });
 
 
 });

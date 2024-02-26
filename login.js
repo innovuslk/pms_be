@@ -1,6 +1,8 @@
 const express = require('express');
 const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
 const connection = require('./database/connect');
+const config = require('./config/config');
 
 const router = express.Router();
 
@@ -26,7 +28,9 @@ router.post('/login', async (req, res) => {
                 const passwordMatch = await bcrypt.compare(password, hashedPassword);
 
                 if (passwordMatch) {
-                    return res.json({ message: "Login successfully" , userLevel:userLevel});
+                    // Generate a JWT token
+                    const token = jwt.sign({ username: username, userLevel: userLevel }, config.JWT_SECRET, { expiresIn: '12h' });
+                    return res.json({ message: "Login successful", token: token, userLevel:userLevel });
                 } else {
                     return res.status(401).json({ message: "Incorrect password" });
                 }

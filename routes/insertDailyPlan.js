@@ -15,16 +15,17 @@ router.post('/insertDailyPlan', async(req, res) => {
         LineNo,
         PlantName,
         DailyTarget,
+        style
     } = req.body;
 
 
 
     const sql = `
-        INSERT INTO dailyPlan (date, sbu, salesOrder, lineItem, lineNo, plantName, dailyTarget)
-        VALUES (?, ?, ?, ?, ?, ?, ?)
+        INSERT INTO dailyPlan (date, sbu, salesOrder, lineItem, lineNo, plantName, dailyTarget,style)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?)
     `;
 
-    const values = [Date, Sbu, SalesOrder, LineItem, LineNo, PlantName, DailyTarget];
+    const values = [Date, Sbu, SalesOrder, LineItem, LineNo, PlantName, DailyTarget, style];
 
     connection.query(sql, values, (err, result) => {
         if (err) {

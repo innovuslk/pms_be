@@ -63,7 +63,7 @@ router.post('/getDailyTarget', async (req, res) => {
 
         // Retrieve sales orders, line items, and quantities for the current date
         const dailyPlanQuery = `
-            SELECT dailyTarget
+            SELECT dailyTarget, style
             FROM dailyPlan
             WHERE date = ? AND lineNo = ?;
         `;
@@ -77,8 +77,9 @@ router.post('/getDailyTarget', async (req, res) => {
 
         if (dailyPlanResult.length > 0) {
             const dailyTarget = dailyPlanResult[0].dailyTarget;
+            const style = dailyPlanResult[0].style;
             // Respond with success and the total piece count
-            res.status(200).json({ message: 'dailyTarget recieved successfully.', dailyTarget: dailyTarget });
+            res.status(200).json({ message: 'dailyTarget recieved successfully.', dailyTarget: dailyTarget,  style: style });
         } else {
             res.status(500).json({ message: 'No dailyTarget recieved.', dailyTarget: 0 });
         }

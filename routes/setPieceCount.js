@@ -49,8 +49,8 @@ router.post('/setPieceCount', async (req, res) => {
 
 
             // Insert a new record
-            const operatorAssignmentQuery = "SELECT operation, lineNo, plantName FROM operatorDailyAssignment WHERE userid = ?";
-            const operatorAssignmentValues = [userId];
+            const operatorAssignmentQuery = "SELECT operation, lineNo, plantName FROM operatorDailyAssignment WHERE userid = ? AND date = ?";
+            const operatorAssignmentValues = [userId,current_date];
             const operatorAssignmentResult = await queryPromise(operatorAssignmentQuery, operatorAssignmentValues);
 
             if (operatorAssignmentResult.length === 0) {
