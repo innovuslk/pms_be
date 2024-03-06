@@ -20,6 +20,7 @@ const getPlantUsers = require('./routes/getPlantUsers')
 const getDowntimes = require('./routes/getDowntime')
 const weekPlan = require('./routes/weekPlan')
 const verifyToken = require('./authentication/verifyToken')
+const getAllUsers = require('./routes/getAllUsers')
 const app = express();
 
 app.use(cors());
@@ -45,6 +46,7 @@ app.use('/get',getPlantUsers);
 app.use('/get',getDowntimes);
 app.use('/insert',weekPlan)
 app.use('/',verifyToken);
+app.use('/',getAllUsers)
 
 const port = 5000;
 app.listen(port, () => {
