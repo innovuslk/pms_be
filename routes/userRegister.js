@@ -14,17 +14,18 @@ router.post('/register', async(req, res) => {
         password,
         userlevel,
         EPF,
-        plantName
+        plantName,
+        mobile
     } = req.body;
 
     const hashedPassword = await bcrypt.hash(password, 10);
 
     const sql = `
-        INSERT INTO User (PN, username, firstName, lastName, password, userLevelId, EPF, plantName)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+        INSERT INTO User (PN, username, firstName, lastName, password, userLevelId, EPF, plantName, mobile)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
     `;
 
-    const values = [PN, username, firstName, lastName, hashedPassword, userlevel, EPF, plantName];
+    const values = [PN, username, firstName, lastName, hashedPassword, userlevel, EPF, plantName, mobile];
 
     connection.query(sql, values, (err, result) => {
         if (err) {

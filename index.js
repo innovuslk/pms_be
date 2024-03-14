@@ -21,6 +21,7 @@ const getDowntimes = require('./routes/getDowntime')
 const weekPlan = require('./routes/weekPlan')
 const verifyToken = require('./authentication/verifyToken')
 const getAllUsers = require('./routes/getAllUsers')
+const sendSMS = require('./routes/sendSMS')
 const app = express();
 
 app.use(cors());
@@ -44,9 +45,10 @@ app.use('/insert',insertDailyPlan);
 app.use('/insert',insertOperator);
 app.use('/get',getPlantUsers);
 app.use('/get',getDowntimes);
-app.use('/insert',weekPlan)
+app.use('/insert',weekPlan);
 app.use('/',verifyToken);
-app.use('/',getAllUsers)
+app.use('/',getAllUsers);
+app.use('/send',sendSMS);
 
 const port = 5000;
 app.listen(port, () => {

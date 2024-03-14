@@ -31,6 +31,7 @@ connection.connect((err) => {
                 userlevelId INT,
                 EPF VARCHAR(255) NOT NULL,
                 plantName VARCHAR(50),
+                mobile VARCHAR(13),
                 INDEX idx_userid (userid),
                 FOREIGN KEY (userlevelId) REFERENCES user_level(id)
             );`,
@@ -60,6 +61,7 @@ connection.connect((err) => {
                 userid INT NOT NULL,
                 Shift VARCHAR(20),
                 operation VARCHAR(255) NOT NULL,
+                supervisor VARCHAR(50),
                 smv FLOAT NOT NULL,
                 FOREIGN KEY (userid) REFERENCES User(userid),
                 FOREIGN KEY (Shift) REFERENCES shift(ShiftID)
@@ -137,6 +139,7 @@ connection.connect((err) => {
         // Data for user_level table
         const userLevelsData = [
             [1, 'admin'],
+            [2, 'supervisor'],
             [3, 'operator']
         ];
     
