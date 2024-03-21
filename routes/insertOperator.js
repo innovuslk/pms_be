@@ -31,7 +31,7 @@ router.post('/insertOperator', async(req, res) => {
             console.error('Error inserting user:', err);
             res.status(500).send('Error Entering Operator.');
         } else {
-            console.log('User registered successfully');
+            console.log('operator inserted successfully');
             res.status(200).send('Operator Assigned Successful.');
         }
     });
