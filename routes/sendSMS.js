@@ -21,7 +21,6 @@ router.post('/sendSMS', async (req, res) => {
 
         const userId = userResult1[0].userid;
 
-        const from = '+18563676136';
 
         const userQuery = "SELECT supervisor FROM operatorDailyAssignment WHERE userid = ? ";
         const userValues = [userId];
@@ -45,15 +44,7 @@ router.post('/sendSMS', async (req, res) => {
 
         const toPhoneNumber = phoneNumberResult[0].mobile;
 
-        // Send SMS message
-        const message = await client.messages.create({
-            body: `'${decodedUsername} need your assistance immediately' - sent from Softmatter PMS`,
-            from,
-            to: toPhoneNumber
-        });
-
-        console.log(message.sid);
-        res.status(200).json({ message: 'SMS sent successfully', messageId: message.sid });
+        res.status(200).json({ phoneNumber: toPhoneNumber });
     } catch (error) {
         console.error('Failed to send SMS:', error);
         res.status(500).json({ message: 'Failed to send SMS' });

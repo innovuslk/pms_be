@@ -12,11 +12,9 @@ router.post('/getShiftHours', async (req, res) => {
         const userValues = [shiftID];
         const userResult = await queryPromise(userQuery, userValues);
 
-        console.log(shiftID);
 
         if (userResult.length > 0) {
             const NoOfHours = userResult[0].NoOfHours;
-            console.log(NoOfHours)
             // Respond with success and the total piece count
             res.status(200).json({ message: 'ShiftHours recieved successfully.', ShiftHours: NoOfHours });
         } else {

@@ -25,15 +25,16 @@ router.post('/getPieceCount', async (req, res) => {
         let current_date = `${year}-${month}-${date} `;
 
         // Get the sum of piece counts for the user
-        const totalPieceCountQuery = "SELECT SUM(pieceCount) as totalPieceCount, MAX(hour) as latestHour FROM pieceCount WHERE userid = ? AND DATE(timestamp) = ?";
+        const totalPieceCountQuery = "SELECT SUM(pieceCount) as totalPieceCount, MAX(hour) as latestHour, MAX(plantName) as plantName FROM pieceCount WHERE userid = ? AND DATE(timestamp) = ?";
         const totalPieceCountValues = [userId , current_date];
         const totalPieceCountResult = await queryPromise(totalPieceCountQuery, totalPieceCountValues);
 
         if (totalPieceCountResult.length > 0) {
             const totalPieceCount = totalPieceCountResult[0].totalPieceCount;
             const latestHour = totalPieceCountResult[0].latestHour;
+            const plantName = totalPieceCountResult[0].plantName;
             // Respond with success and the total piece count and latest hour
-            res.status(200).json({ message: 'Total piece count retrieved successfully.', totalPieceCount: totalPieceCount, latestHour: latestHour });
+            res.status(200).json({ message: 'Total piece count retrieved successfully.', totalPieceCount: totalPieceCount, latestHour: latestHour, plantName: plantName });
         } else {
             res.status(200).json({ message: 'No piece counts found for the user.', totalPieceCount: 0 });
         }

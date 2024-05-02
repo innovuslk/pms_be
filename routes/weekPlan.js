@@ -6,7 +6,6 @@ const router = express.Router();
 
 
 router.post('/insertWeekPlan', async(req, res) => {
-    console.log(req.body)
     const { data } = req.body;
 
     // Define an array to store the values for each row

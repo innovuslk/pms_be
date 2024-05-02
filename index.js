@@ -25,6 +25,9 @@ const sendSMS = require('./routes/sendSMS');
 const getSvLineNo = require('./routes/getSuperVisorsLineNo');
 const getPieceCountByLine = require('./routes/getPieceCountByLineNo');
 const getsmvByLine = require('./routes/getSmvByLine');
+const getAllOperators = require('./routes/getAllOperators')
+const chatRouter = require('./routes/startChat');
+
 const app = express();
 
 app.use(cors());
@@ -55,6 +58,8 @@ app.use('/send',sendSMS);
 app.use('/',getSvLineNo);
 app.use('/',getPieceCountByLine);
 app.use('/',getsmvByLine);
+app.use('/',getAllOperators)
+app.use('/chat', chatRouter);
 
 const port = 5000;
 app.listen(port, () => {

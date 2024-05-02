@@ -7,7 +7,6 @@ const router = express.Router();
 
 router.post('/downTime', async (req, res) => {
     try {
-        console.log(req.body)
         const decodedUsername = atob(req.body.username);
         const downTime = req.body.downTime;
         const type = req.body.type;

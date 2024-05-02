@@ -13,8 +13,6 @@ router.post('/getInfo', async (req, res) => {
         const userQuery = "SELECT userid FROM User WHERE username = ?";
         const userValues = [decodedUsername];
 
-        console.log(decodedUsername);
-
         const userResult = await new Promise((resolve, reject) => {
             connection.query(userQuery, userValues, (err, data) => {
                 if (err) {
@@ -41,7 +39,6 @@ router.post('/getInfo', async (req, res) => {
         const assignmentQuery = "SELECT lineNo, plantName FROM operatorDailyAssignment WHERE userid = ? AND date = ?";
         const assignmentValues = [userId, current_date];
 
-        console.log(userId)
 
         const assignmentResult = await new Promise((resolve, reject) => {
             connection.query(assignmentQuery, assignmentValues, (err, data) => {

@@ -31,7 +31,7 @@ router.post('/getSvLineNo', async (req, res) => {
         `;
         const values = [userId, current_date];
         const result = await queryPromise(query, values);
-        console.log(result)
+
 
         const uniqueLineNosSet = new Set();
         result.forEach(row => {
