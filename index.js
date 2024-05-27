@@ -65,7 +65,7 @@ app.use('/chat', chatRouter);
 app.use('/get',mybest);
 app.use('/get',getAPILineData);
 
-const port = 5000;
+const port = process.env.PORT;
 app.listen(port, () => {
     console.log(`Server is running on ${port}`);
 });
