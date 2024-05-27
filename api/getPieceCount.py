@@ -12,7 +12,8 @@ def create_connection():
             host='localhost',
             database='softmatter',
             user='newuser',
-            password='12345'
+            password='12345',
+            auth_plugin='mysql_native_password'
         )
         if connection.is_connected():
             print("Connected to the database")
