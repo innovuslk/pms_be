@@ -87,7 +87,13 @@ connection.connect((err) => {
                 type VARCHAR(255) not null,
                 startTime TIMESTAMP,
                 endTime TIMESTAMP
-            );`
+            );`,
+            `CREATE TABLE IF NOT EXISTS api_piececount (
+                id INT AUTO_INCREMENT PRIMARY KEY,
+                operator VARCHAR(30) NOT NULL,
+                timestamp TIMESTAMP NOT NULL,
+                pieceCount VARCHAR(50)
+            )`
         ];
 
         // Execute each query

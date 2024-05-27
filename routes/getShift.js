@@ -18,9 +18,15 @@ router.post('/getShift', async (req, res) => {
 
         const userId = userResult[0].userid;
 
+        let date_time = new Date();
+        let month = ("0" + (date_time.getMonth() + 1)).slice(-2);
+        let year = date_time.getFullYear();
+        let date = ("0" + date_time.getDate()).slice(-2);
+        let current_date = `${year}-${month}-${date} `;
+
         // Get the sum of piece counts for the user
-        const shift = "SELECT Shift FROM operatorDailyAssignment WHERE userid = ?";
-        const shiftValues = [userId];
+        const shift = "SELECT Shift FROM operatorDailyAssignment WHERE userid = ? AND date = ?";
+        const shiftValues = [userId, current_date];
         const shiftResults = await queryPromise(shift, shiftValues);
 
         if (shiftResults.length > 0) {

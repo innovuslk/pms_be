@@ -27,6 +27,7 @@ const getPieceCountByLine = require('./routes/getPieceCountByLineNo');
 const getsmvByLine = require('./routes/getSmvByLine');
 const getAllOperators = require('./routes/getAllOperators')
 const chatRouter = require('./routes/startChat');
+const mybest = require('./routes/getMyBest');
 
 const app = express();
 
@@ -60,6 +61,7 @@ app.use('/',getPieceCountByLine);
 app.use('/',getsmvByLine);
 app.use('/',getAllOperators)
 app.use('/chat', chatRouter);
+app.use('/get',mybest);
 
 const port = 5000;
 app.listen(port, () => {
