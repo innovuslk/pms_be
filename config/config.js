@@ -7,5 +7,6 @@ module.exports = {
     DB_DATABASE: process.env.DB_DATABASE,
     JWT_SECRET: process.env.JWT_SECRET,
     TWILIO_ACCOUNT_SID: process.env.TWILIO_ACCOUNT_SID,
-    TWILIO_AUTH_TOKEN: process.env.TWILIO_AUTH_TOKEN
+    TWILIO_AUTH_TOKEN: process.env.TWILIO_AUTH_TOKEN,
+    APP_HOST_IP: process.env.APP_HOST_IP
 };
