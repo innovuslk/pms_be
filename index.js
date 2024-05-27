@@ -28,6 +28,7 @@ const getsmvByLine = require('./routes/getSmvByLine');
 const getAllOperators = require('./routes/getAllOperators')
 const chatRouter = require('./routes/startChat');
 const mybest = require('./routes/getMyBest');
+const getAPILineData = require('./routes/getAPILineData');
 
 const app = express();
 
@@ -62,6 +63,7 @@ app.use('/',getsmvByLine);
 app.use('/',getAllOperators)
 app.use('/chat', chatRouter);
 app.use('/get',mybest);
+app.use('/get',getAPILineData);
 
 const port = 5000;
 app.listen(port, () => {

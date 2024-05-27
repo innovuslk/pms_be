@@ -9,9 +9,9 @@ import time
 def create_connection():
     try:
         connection = mysql.connector.connect(
-            host='localhost', 
+            host='localhost',
             database='softmatter',
-            user='newuser', 
+            user='newuser',
             password='12345'
         )
         if connection.is_connected():
@@ -28,7 +28,8 @@ def create_table(connection):
         id INT AUTO_INCREMENT PRIMARY KEY,
         operator VARCHAR(30) NOT NULL,
         timestamp TIMESTAMP NOT NULL,
-        pieceCount INT NOT NULL
+        pieceCount INT NOT NULL,
+        UNIQUE KEY unique_entry (operator, timestamp)
     )
     """
     cursor = connection.cursor()
