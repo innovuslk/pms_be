@@ -13,14 +13,20 @@ router.post('/getTopUsers', async (req, res) => {
 
         // Get the top 5 users with the highest piece counts
         const topUsersQuery = `
+        SELECT pc.userid, u.username, pc.totalPieceCount, p.shift, p.plantName, p.lineItem
+        FROM (
             SELECT userid, SUM(pieceCount) AS totalPieceCount
             FROM pieceCount
             WHERE DATE(timestamp) = ?
             GROUP BY userid
             ORDER BY totalPieceCount DESC
-            LIMIT 5;
-        `;
-        const topUsersQueryValues = [current_date];
+            LIMIT 5
+        ) AS pc
+        JOIN User u ON pc.userid = u.userid
+        JOIN pieceCount p ON pc.userid = p.userid
+        WHERE DATE(p.timestamp) = ?;
+    `;
+        const topUsersQueryValues = [current_date,current_date];
         const topUsersResult = await queryPromise(topUsersQuery, topUsersQueryValues);
 
         // Fetch usernames of top users from the user table
@@ -39,7 +45,10 @@ router.post('/getTopUsers', async (req, res) => {
             return {
                 userid: user.userid,
                 username: userDetails ? userDetails.username : null,
-                totalPieceCount: user.totalPieceCount
+                totalPieceCount: user.totalPieceCount,
+                shift: user.shift,
+                plantName: user.plantName,
+                line: user.lineItem
             };
         });
 

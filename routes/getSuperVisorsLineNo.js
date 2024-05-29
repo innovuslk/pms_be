@@ -17,12 +17,13 @@ router.post('/getSvLineNo', async (req, res) => {
         }
 
         const userId = userResult[0].userid;
+        
         // Get today's date in the format YYYY-MM-DD
         let date_time = new Date();
         let month = ("0" + (date_time.getMonth() + 1)).slice(-2);
         let year = date_time.getFullYear();
         let date = ("0" + date_time.getDate()).slice(-2);
-        let current_date = `${year}-${month}-${date} `;
+        let current_date = `${year}-${month}-${date}`;
 
         // Fetch all columns' data from downtime table where startTime is today's date
         const query = `
@@ -33,7 +34,6 @@ router.post('/getSvLineNo', async (req, res) => {
         const values = [userId, current_date, plantName];
         const result = await queryPromise(query, values);
 
-
         const uniqueLineNosSet = new Set();
         result.forEach(row => {
             uniqueLineNosSet.add(row.lineNo);
@@ -41,7 +41,31 @@ router.post('/getSvLineNo', async (req, res) => {
 
         const uniqueLineNos = [...uniqueLineNosSet];
 
-        res.status(200).json({ message: 'line numbers retrieved successfully.', lineNos: uniqueLineNos});
+        if (uniqueLineNos.length === 0) {
+            return res.status(200).json({ message: 'Line numbers retrieved successfully.', lineNos: [], linePieceCounts: [] });
+        }
+
+        // Get the piece counts for each unique line number
+        const pieceCountQuery = `
+            SELECT lineNo, SUM(pieceCount) AS totalPieceCount
+            FROM pieceCount
+            WHERE operation = 'LineEnd'
+            AND DATE(timestamp) = ?
+            AND lineNo IN (?)
+            GROUP BY lineNo;
+        `;
+        const pieceCountValues = [current_date, uniqueLineNos];
+        const pieceCountResult = await queryPromise(pieceCountQuery, pieceCountValues);
+
+        const linePieceCounts = uniqueLineNos.map(lineNo => {
+            const pieceCountData = pieceCountResult.find(row => row.lineNo === lineNo);
+            return {
+                lineNo: lineNo,
+                pieceCount: pieceCountData ? pieceCountData.totalPieceCount : 0
+            };
+        });
+
+        res.status(200).json({ message: 'Line numbers retrieved successfully.', lineNos: uniqueLineNos, linePieceCounts });
     } catch (error) {
         console.error(error);
         res.status(500).send('Error retrieving lineNo');
@@ -79,7 +103,7 @@ router.post('/getSvPlant', async (req, res) => {
 
 
         const uniquePlantName = new Set();
-        result.forEach(row =>{
+        result.forEach(row => {
             uniquePlantName.add(row.plantName)
         });
 
@@ -125,18 +149,18 @@ router.post('/getSvLineUsers', async (req, res) => {
         // Extract unique user IDs
         const uniqueUserIds = result.map(row => row.userid);
 
-        // Fetch usernames from User table based on unique user IDs
-        const usernameQuery = `
-            SELECT username
-            FROM User
-            WHERE userid IN (${uniqueUserIds.map(() => '?').join(', ')});
-        `;
-        const usernameValues = [...uniqueUserIds];
-        const usernamesResult = await queryPromise(usernameQuery, usernameValues);
+        // Calculate the sum of pieceCount for today's date and specific user IDs
+        const usernamesQuery = `
+        SELECT u.username, SUM(pc.pieceCount) as totalPieceCount
+        FROM User u
+        JOIN pieceCount pc ON u.userid = pc.userid
+        WHERE DATE(pc.timestamp) = ? AND pc.userid IN (${uniqueUserIds.map(() => '?').join(', ')})
+        GROUP BY u.username;
+    `;
+        const usernamesValues = [current_date, ...uniqueUserIds];
+        const usernamesResult = await queryPromise(usernamesQuery, usernamesValues);
 
-        const usernames = usernamesResult.map(row => row.username);
-
-        res.status(200).json({ usernames });
+        res.status(200).json(usernamesResult);
     } catch (error) {
         console.error(error);
         res.status(500).send('Error retrieving usernames');

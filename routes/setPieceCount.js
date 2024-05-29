@@ -66,6 +66,8 @@ router.post('/setPieceCount', async (req, res) => {
             const insertPieceCountValues = [uniqueId, userId, salesOrder, lineItem, operation, plantName, pieceCount, shift, hour, lineNo];
             await queryPromise(insertPieceCountQuery, insertPieceCountValues);
 
+            res.status(200).send('Piece count updated successfully');
+
     } catch (error) {
         console.error(error);
         res.status(500).send('Error updating piece Count');

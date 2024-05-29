@@ -44,13 +44,13 @@ def insert_shooter_count(connection, operator, piece_count, timestamp):
     cursor.execute(insert_query, (operator, timestamp, piece_count))
     connection.commit()
 
-# Fetch the last shooter count for an operator
-def get_last_shooter_count(connection, operator):
-    select_query = "SELECT pieceCount FROM api_piececount WHERE operator=%s ORDER BY timestamp DESC LIMIT 1"
+# Fetch the last shooter count and its timestamp for an operator
+def get_last_shooter_count_and_timestamp(connection, operator):
+    select_query = "SELECT pieceCount, timestamp FROM api_piececount WHERE operator=%s ORDER BY timestamp DESC LIMIT 1"
     cursor = connection.cursor()
     cursor.execute(select_query, (operator,))
     result = cursor.fetchone()
-    return int(result[0]) if result else None
+    return (int(result[0]), result[1]) if result else (None, None)
 
 # Fetch data from the API
 def fetch_data_from_api():
@@ -67,6 +67,9 @@ def main():
     connection = create_connection()
     if connection:
         create_table(connection)
+
+        # Dictionary to track the last inserted values and timestamps in memory
+        last_values = {}
 
         while True:
             data = fetch_data_from_api()
@@ -91,19 +94,22 @@ def main():
                             timestamp_utc = utc_zone.localize(timestamp_utc)
                             timestamp_local = timestamp_utc.astimezone(local_zone).strftime('%Y-%m-%d %H:%M:%S')
 
-                            last_shooter_count = get_last_shooter_count(connection, operator)
-                            if last_shooter_count is not None:
+                            # Check in-memory last values
+                            if operator in last_values:
+                                last_shooter_count, last_timestamp = last_values[operator]
                                 difference = int(piece_count) - last_shooter_count
-                                if difference > 0:  # Ensure the difference is positive
+                                if (difference > 0 or difference < 0):  # Ensure the difference is positive
                                     insert_shooter_count(connection, operator, difference, timestamp_local)
-                                    print(f"Inserted data for operator: {operator} with pieceCount: {difference}")
+                                    last_values[operator] = (int(piece_count), timestamp_local)
+                                    print(f"operator: {operator} pieceCount: {difference} at {timestamp_local}")
                                 else:
-                                    print(f"No positive change in shooter count for operator: {operator}, skipping insertion.")
+                                    print(f"No positive change: {operator}")
                             else:
                                 piece_count = int(piece_count)
                                 if piece_count >= 0:  # Ensure the piece_count is non-negative
                                     insert_shooter_count(connection, operator, piece_count, timestamp_local)
-                                    print(f"Inserted data for operator: {operator} with pieceCount: {piece_count}")
+                                    last_values[operator] = (piece_count, timestamp_local)
+                                    print(f"Inserted {operator} pieceCount: {piece_count} at {timestamp_local}")
             time.sleep(60)
 
 if __name__ == "__main__":
