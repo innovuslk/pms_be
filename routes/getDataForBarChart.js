@@ -8,6 +8,7 @@ router.post('/getDataForBarChart', async (req, res) => {
     try {
 
         const operatorType = req.body.operatorType
+        const shift = req.body.shift
         let decodedUsername;
 
         try {
@@ -38,8 +39,8 @@ router.post('/getDataForBarChart', async (req, res) => {
 
         if(operatorType === 'operator'){
             for (const hour of hours) {
-                const totalPieceCountQuery = `SELECT SUM(pieceCount) as totalPieceCount FROM pieceCount WHERE hour = ? AND operation = ? AND userid = ? AND DATE(timestamp) = ?`;
-                const totalPieceCountValues = [hour, operatorType,userId,current_date];
+                const totalPieceCountQuery = `SELECT SUM(pieceCount) as totalPieceCount FROM pieceCount WHERE hour = ? AND operation = ? AND userid = ? AND DATE(timestamp) = ? AND shift = ?`;
+                const totalPieceCountValues = [hour, operatorType,userId,current_date, shift];
                 const result = await queryPromise(totalPieceCountQuery, totalPieceCountValues);
     
                 if (result.length > 0) {
@@ -52,8 +53,8 @@ router.post('/getDataForBarChart', async (req, res) => {
 
         if(operatorType === 'LineEnd'){
             for (const hour of hours) {
-                const totalPieceCountQuery2 = `SELECT SUM(pieceCount) as totalPieceCount FROM pieceCount WHERE hour = ? AND operation = ? AND DATE(timestamp) = ?`;
-                const totalPieceCountValues2 = [hour, operatorType, current_date];
+                const totalPieceCountQuery2 = `SELECT SUM(pieceCount) as totalPieceCount FROM pieceCount WHERE hour = ? AND operation = ? AND DATE(timestamp) = ? AND shift = ?`;
+                const totalPieceCountValues2 = [hour, operatorType, current_date, shift];
                 const result2 = await queryPromise(totalPieceCountQuery2, totalPieceCountValues2);
     
                 if (result2.length > 0) {
