@@ -36,7 +36,7 @@ router.post('/getInfo', async (req, res) => {
         let current_date = `${year}-${month}-${date} `;
 
         // Step 2: Get plantName and lineNo from operatordailyassignment using userId
-        const assignmentQuery = "SELECT lineNo, plantName FROM operatorDailyAssignment WHERE userid = ? AND date = ?";
+        const assignmentQuery = "SELECT lineNo, plantName, operation FROM operatorDailyAssignment WHERE userid = ? AND date = ?";
         const assignmentValues = [userId, current_date];
 
 
@@ -54,10 +54,10 @@ router.post('/getInfo', async (req, res) => {
             return res.status(404).send('Assignment data not found');
         }
 
-        const { lineNo, plantName } = assignmentResult[0];
+        const { lineNo, plantName, operation } = assignmentResult[0];
 
         // Send the response with plantName and lineNo
-        res.json({ plantName, lineNo, decodedUsername });
+        res.json({ plantName, lineNo, decodedUsername, operation });
     } catch (error) {
         console.error('Error:', error);
         res.status(500).send('Internal Server Error');
