@@ -37,7 +37,7 @@ router.post('/getDataForBarChart', async (req, res) => {
         let date = ("0" + date_time.getDate()).slice(-2);
         let current_date = `${year}-${month}-${date} `;
 
-        if(operatorType === 'operator'){
+        if(operatorType === 'operator' || operatorType === 'Pullout 1' || operatorType === 'Pullout 2'){
             for (const hour of hours) {
                 const totalPieceCountQuery = `SELECT SUM(pieceCount) as totalPieceCount FROM pieceCount WHERE hour = ? AND operation = ? AND userid = ? AND DATE(timestamp) = ? AND shift = ?`;
                 const totalPieceCountValues = [hour, operatorType,userId,current_date, shift];
