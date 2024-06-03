@@ -28,7 +28,7 @@ router.post('/getDataForBarChart', async (req, res) => {
 
         const userId = userResult[0].userid;
 
-        const hours = ["1st Hour", "2nd Hour", "3rd Hour", "4th Hour", "5th Hour", "6th Hour", "7th Hour", "8th Hour"];
+        const hours = ["1st Hour", "2nd Hour", "3rd Hour", "4th Hour", "5th Hour", "6th Hour", "7th Hour", "8th Hour","9th Hour", "10th Hour"];
         const totalPieceCountByHour = {};
 
         let date_time = new Date();
@@ -37,7 +37,7 @@ router.post('/getDataForBarChart', async (req, res) => {
         let date = ("0" + date_time.getDate()).slice(-2);
         let current_date = `${year}-${month}-${date} `;
 
-        if(operatorType === 'operator' || operatorType === 'Pullout 1' || operatorType === 'Pullout 2'){
+        if(operatorType === 'Operator' || operatorType === 'Pullout 1' || operatorType === 'Pullout 2'){
             for (const hour of hours) {
                 const totalPieceCountQuery = `SELECT SUM(pieceCount) as totalPieceCount FROM pieceCount WHERE hour = ? AND operation = ? AND userid = ? AND DATE(timestamp) = ? AND shift = ?`;
                 const totalPieceCountValues = [hour, operatorType,userId,current_date, shift];
