@@ -28,7 +28,7 @@ router.post('/getDataForBarChart', async (req, res) => {
 
         const userId = userResult[0].userid;
 
-        const hours = ["1st Hour", "2nd Hour", "3rd Hour", "4th Hour", "5th Hour", "6th Hour", "7th Hour", "8th Hour","9th Hour", "10th Hour"];
+        const hours = ["1", "2", "3", "4", "5", "6", "7", "8","9", "10"];
         const totalPieceCountByHour = {};
 
         let date_time = new Date();
