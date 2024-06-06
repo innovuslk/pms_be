@@ -30,6 +30,8 @@ const chatRouter = require('./routes/startChat');
 const mybest = require('./routes/getMyBest');
 const getAPILineData = require('./routes/getAPILineData');
 const getSupervisorDailyTarget = require('./routes/getSuperviosrDailyTarget')
+const getStyle = require('./routes/getStyle')
+const insertStyle = require('./routes/insertStyle')
 
 const app = express();
 
@@ -66,6 +68,8 @@ app.use('/chat', chatRouter);
 app.use('/get',mybest);
 app.use('/get',getAPILineData);
 app.use('/get', getSupervisorDailyTarget);
+app.use('/get', getStyle);
+app.use('/insert', insertStyle);
 
 const port = process.env.PORT;
 app.listen(port, () => {

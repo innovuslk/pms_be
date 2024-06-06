@@ -93,7 +93,20 @@ connection.connect((err) => {
                 operator VARCHAR(30) NOT NULL,
                 timestamp TIMESTAMP NOT NULL,
                 pieceCount VARCHAR(50)
-            )`
+            );`,
+            `CREATE TABLE IF NOT EXISTS style (
+                id INT AUTO_INCREMENT PRIMARY KEY,
+                base_style VARCHAR(30),
+                style_number VARCHAR(30),
+                size VARCHAR(50),
+                stitchCount VARCHAR(50)
+            );`,
+            `CREATE TABLE IF NOT EXISTS operatorSize (
+                id INT AUTO_INCREMENT PRIMARY KEY,
+                userid INT NOT NULL,
+                size VARCHAR(50),
+                timestamp TIMESTAMP NOT NULL
+            );`
         ];
 
         // Execute each query
