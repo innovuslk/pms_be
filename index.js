@@ -33,6 +33,7 @@ const getSupervisorDailyTarget = require('./routes/getSuperviosrDailyTarget')
 const getStyle = require('./routes/getStyle')
 const insertStyle = require('./routes/insertStyle')
 const insertStyleData = require('./routes/insertStyleData')
+const OperatorWeekUpload = require('./routes/OperatorWeekUpload')
 
 const app = express();
 
@@ -72,6 +73,7 @@ app.use('/get', getSupervisorDailyTarget);
 app.use('/get', getStyle);
 app.use('/insert', insertStyle);
 app.use('/insert', insertStyleData);
+app.use('/insert',OperatorWeekUpload);
 
 const port = process.env.PORT;
 app.listen(port, () => {
