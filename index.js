@@ -34,6 +34,7 @@ const getStyle = require('./routes/getStyle')
 const insertStyle = require('./routes/insertStyle')
 const insertStyleData = require('./routes/insertStyleData')
 const OperatorWeekUpload = require('./routes/OperatorWeekUpload')
+const getTopUsersWithCycle = require('./routes/getTopUsersWithCycle')
 
 const app = express();
 
@@ -74,6 +75,7 @@ app.use('/get', getStyle);
 app.use('/insert', insertStyle);
 app.use('/insert', insertStyleData);
 app.use('/insert',OperatorWeekUpload);
+app.use('/get',getTopUsersWithCycle);
 
 const port = process.env.PORT;
 app.listen(port, () => {

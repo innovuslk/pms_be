@@ -9,53 +9,71 @@ router.post('/getTopUsers', async (req, res) => {
         let month = ("0" + (date_time.getMonth() + 1)).slice(-2);
         let year = date_time.getFullYear();
         let date = ("0" + date_time.getDate()).slice(-2);
-        let current_date = `${year}-${month}-${date} `;
+        let current_date = `${year}-${month}-${date}`;
 
         // Get the top 5 users with the highest piece counts
         const topUsersQuery = `
-        SELECT pc.userid, u.username, pc.totalPieceCount, p.shift, p.plantName, p.lineItem
-        FROM (
-            SELECT userid, SUM(pieceCount) AS totalPieceCount
-            FROM pieceCount
-            WHERE DATE(timestamp) = ?
-            GROUP BY userid
-            ORDER BY totalPieceCount DESC
-            LIMIT 5
-        ) AS pc
-        JOIN User u ON pc.userid = u.userid
-        JOIN pieceCount p ON pc.userid = p.userid
-        WHERE DATE(p.timestamp) = ?;
-    `;
-        const topUsersQueryValues = [current_date,current_date];
+            SELECT pc.userid, u.username, pc.totalPieceCount, p.shift, p.plantName, p.lineNo, p.operation
+            FROM (
+                SELECT userid, SUM(pieceCount) AS totalPieceCount
+                FROM pieceCount
+                WHERE DATE(timestamp) = ?
+                GROUP BY userid
+                ORDER BY totalPieceCount DESC
+                LIMIT 5
+            ) AS pc
+            JOIN User u ON pc.userid = u.userid
+            JOIN (
+                SELECT userid, shift, plantName, lineNo, operation
+                FROM pieceCount
+                WHERE DATE(timestamp) = ?
+                GROUP BY userid, shift, plantName, lineNo, operation
+            ) AS p ON pc.userid = p.userid
+        `;
+        const topUsersQueryValues = [current_date, current_date];
         const topUsersResult = await queryPromise(topUsersQuery, topUsersQueryValues);
 
-        // Fetch usernames of top users from the user table
-        const userIds = topUsersResult.map(user => user.userid);
-        const userNamesQuery = `
-            SELECT userid, username
-            FROM User
-            WHERE userid IN (?);
-        `;
-        const userNamesQueryValues = [userIds];
-        const userNamesResult = await queryPromise(userNamesQuery, userNamesQueryValues);
+        const topUsersWithCurrentHourOutput = await Promise.all(topUsersResult.map(async (user) => {
+            const latestHourQuery = `
+                SELECT MAX(hour) AS latestHour
+                FROM pieceCount
+                WHERE userid = ? AND DATE(timestamp) = ?
+            `;
+            const latestHourValues = [user.userid, current_date];
+            const latestHourResult = await queryPromise(latestHourQuery, latestHourValues);
+            const latestHour = latestHourResult[0]?.latestHour || 0;
 
-        // Combine user IDs, usernames, and piece counts
-        const topUsersWithUsernames = topUsersResult.map(user => {
-            const userDetails = userNamesResult.find(u => u.userid === user.userid);
+            const currentHourOutputQuery = `
+                SELECT SUM(pieceCount) AS currentHourOutput
+                FROM pieceCount
+                WHERE userid = ? AND DATE(timestamp) = ? AND hour = ?
+            `;
+            const currentHourOutputValues = [user.userid, current_date, latestHour];
+            const currentHourOutputResult = await queryPromise(currentHourOutputQuery, currentHourOutputValues);
+            const currentHourOutput = currentHourOutputResult[0]?.currentHourOutput || 0;
+
             return {
-                userid: user.userid,
-                username: userDetails ? userDetails.username : null,
-                totalPieceCount: user.totalPieceCount,
-                shift: user.shift,
-                plantName: user.plantName,
-                line: user.lineItem
+                ...user,
+                currentHourOutput,
+                latestHour
             };
-        });
+        }));
 
-        res.status(200).json({ message: 'Top 5 users with highest piece counts retrieved successfully.', topUsers: topUsersWithUsernames });
+        // Insert top users with currentHourOutput, latestHour, and current timestamp into topUsers table
+        const insertTopUsersQuery = `
+            INSERT INTO topUsers (userid, username, totalPieceCount, shift, plantName, lineItem, currentHourOutput, latestHour, timestamp, operation)
+            VALUES ?
+        `;
+        const currentTimestamp = new Date();
+        const insertTopUsersValues = topUsersWithCurrentHourOutput.map(user => [
+            user.userid, user.username, user.totalPieceCount, user.shift, user.plantName, user.lineNo, user.currentHourOutput, user.latestHour, currentTimestamp, user.operation
+        ]);
+        await queryPromise(insertTopUsersQuery, [insertTopUsersValues]);
+
+        res.status(200).json({ message: 'Top 5 users with highest piece counts, current hour output, and latest hour inserted successfully.', topUsers: topUsersWithCurrentHourOutput });
     } catch (error) {
         console.error(error);
-        res.status(500).send('Error retrieving top users with highest piece counts');
+        res.status(500).send('Error retrieving and inserting top users with highest piece counts, current hour output, and latest hour');
     }
 });
 

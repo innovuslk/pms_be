@@ -106,6 +106,19 @@ connection.connect((err) => {
                 userid INT NOT NULL,
                 size VARCHAR(50),
                 timestamp TIMESTAMP NOT NULL
+            );`,
+            `CREATE TABLE IF NOT EXISTS topUsers (
+                id INT AUTO_INCREMENT PRIMARY KEY,
+                userid INT NOT NULL,
+                username VARCHAR(255) NOT NULL,
+                totalPieceCount INT NOT NULL,
+                shift VARCHAR(25) NOT NULL,
+                plantName VARCHAR(25) NOT NULL,
+                lineItem VARCHAR(50) NOT NULL,
+                currentHourOutput INT NOT NULL,
+                latestHour VARCHAR(20) NOT NULL,
+                timestamp TIMESTAMP NOT NULL,
+                operation VARCHAR(20) NOT NULL
             );`
         ];
 
@@ -149,29 +162,29 @@ connection.connect((err) => {
         });
 
 
-        const insertUserLevelsQuery = `INSERT INTO user_level (id, userlevel)
+    const insertUserLevelsQuery = `INSERT INTO user_level (id, userlevel)
         SELECT * FROM (SELECT ?, ?) AS tmp
         WHERE NOT EXISTS (
             SELECT id FROM user_level WHERE id = ?
         ) LIMIT 1`;
-    
-        // Data for user_level table
-        const userLevelsData = [
-            [1, 'admin'],
-            [2, 'supervisor'],
-            [3, 'operator']
-        ];
-    
-        // Insert data into user_level table
-        userLevelsData.forEach((userData) => {
-            connection.query(insertUserLevelsQuery, [...userData, userData[0]], (err, results) => {
-                if (err) {
-                    console.error('Error inserting user level:', err);
-                } else {
-                    console.log('User level inserted successfully:', results);
-                }
-            });
+
+    // Data for user_level table
+    const userLevelsData = [
+        [1, 'admin'],
+        [2, 'supervisor'],
+        [3, 'operator']
+    ];
+
+    // Insert data into user_level table
+    userLevelsData.forEach((userData) => {
+        connection.query(insertUserLevelsQuery, [...userData, userData[0]], (err, results) => {
+            if (err) {
+                console.error('Error inserting user level:', err);
+            } else {
+                console.log('User level inserted successfully:', results);
+            }
         });
+    });
 
 
 });
