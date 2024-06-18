@@ -8,7 +8,7 @@ router.post('/getDataForBarChart', async (req, res) => {
     try {
         const { operatorType, shift, username } = req.body;
 
-        console.log(operatorType)
+        // console.log(operatorType)
         let decodedUsername;
         try {
             decodedUsername = base64.decode(username);
