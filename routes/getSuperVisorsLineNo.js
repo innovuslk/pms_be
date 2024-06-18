@@ -47,7 +47,7 @@ router.post('/getSvLineNo', async (req, res) => {
 
         // Get the piece counts for each unique line number
         const pieceCountQuery = `
-            SELECT lineNo, SUM(pieceCount) AS totalPieceCount
+            SELECT lineNo, MAX(hour) as latestHour, SUM(pieceCount) AS totalPieceCount
             FROM pieceCount
             WHERE operation = 'LineEnd'
             AND DATE(timestamp) = ?
@@ -61,7 +61,8 @@ router.post('/getSvLineNo', async (req, res) => {
             const pieceCountData = pieceCountResult.find(row => row.lineNo === lineNo);
             return {
                 lineNo: lineNo,
-                pieceCount: pieceCountData ? pieceCountData.totalPieceCount : 0
+                pieceCount: pieceCountData ? pieceCountData.totalPieceCount : 0,
+                latestHour: pieceCountData.latestHour
             };
         });
 

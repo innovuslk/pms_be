@@ -50,7 +50,8 @@ connection.connect((err) => {
                 lineNo VARCHAR(50) NOT NULL,
                 plantName VARCHAR(255) NOT NULL,
                 style VARCHAR(50),
-                dailyTarget INT NOT NULL
+                dailyTarget INT NOT NULL,
+                shift VARCHAR(20)
             );`,
             `CREATE TABLE IF NOT EXISTS operatorDailyAssignment (
                 id INT AUTO_INCREMENT PRIMARY KEY,
