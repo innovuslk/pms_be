@@ -100,7 +100,8 @@ connection.connect((err) => {
                 base_style VARCHAR(30),
                 style_number VARCHAR(30),
                 size VARCHAR(50),
-                stitchCount VARCHAR(50)
+                stitchCount VARCHAR(50),
+                operation VARCHAR(20)
             );`,
             `CREATE TABLE IF NOT EXISTS operatorSize (
                 id INT AUTO_INCREMENT PRIMARY KEY,

@@ -4,10 +4,14 @@ const connection = require('../database/connect');
 const router = express.Router();
 
 router.post('/getStyle', async (req, res) => {
+
+    let operation = req.body.operation
+
     try {
         // Get the styles from the database
-        const styleQuery = "SELECT * FROM style";
-        const styleResults = await queryPromise(styleQuery);
+        const styleQuery = "SELECT * FROM style WHERE operation = ?";
+        const styleValues = [operation]
+        const styleResults = await queryPromise(styleQuery,styleValues);
 
         if (styleResults.length > 0) {
             // Extract styles
