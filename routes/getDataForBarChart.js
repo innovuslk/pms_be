@@ -6,13 +6,12 @@ const router = express.Router();
 
 router.post('/getDataForBarChart', async (req, res) => {
     try {
+        const { operatorType, shift, username } = req.body;
 
-        const operatorType = req.body.operatorType
-        const shift = req.body.shift
+        // console.log(operatorType)
         let decodedUsername;
-
         try {
-            decodedUsername = base64.decode(req.body.username);
+            decodedUsername = base64.decode(username);
         } catch (error) {
             console.error(error);
             return res.status(400).send('Invalid base64-encoded username');
@@ -28,47 +27,52 @@ router.post('/getDataForBarChart', async (req, res) => {
 
         const userId = userResult[0].userid;
 
-        const hours = ["1", "2", "3", "4", "5", "6", "7", "8","9", "10","11"];
-        const totalPieceCountByHour = {};
-
         let date_time = new Date();
         let month = ("0" + (date_time.getMonth() + 1)).slice(-2);
         let year = date_time.getFullYear();
         let date = ("0" + date_time.getDate()).slice(-2);
-        let current_date = `${year}-${month}-${date} `;
+        let current_date = `${year}-${month}-${date}`;
 
-        if(operatorType === 'Operator' || operatorType === 'Pullout 1' || operatorType === 'Pullout 2'){
-            for (const hour of hours) {
-                const totalPieceCountQuery = `SELECT SUM(pieceCount) as totalPieceCount FROM pieceCount WHERE hour = ? AND operation = ? AND userid = ? AND DATE(timestamp) = ? AND shift = ?`;
-                const totalPieceCountValues = [hour, operatorType,userId,current_date, shift];
-                const result = await queryPromise(totalPieceCountQuery, totalPieceCountValues);
-    
-                if (result.length > 0) {
-                    totalPieceCountByHour[hour] = result[0].totalPieceCount;
-                } else {
-                    totalPieceCountByHour[hour] = 0;
-                }
-            }
+        let query = '';
+        let values = [];
+
+        if (['Operator', 'Pullout 1', 'Pullout 2'].includes(operatorType)) {
+            query = `
+                SELECT hour, SUM(pieceCount) as totalPieceCount 
+                FROM pieceCount 
+                WHERE operation = ? 
+                AND userid = ? 
+                AND DATE(timestamp) = ? 
+                AND shift = ?
+                GROUP BY hour
+            `;
+            values = [operatorType, userId, current_date, shift];
+        } else if (operatorType === 'LineEnd') {
+            query = `
+                SELECT hour, SUM(pieceCount) as totalPieceCount 
+                FROM pieceCount 
+                WHERE operation = ? 
+                AND DATE(timestamp) = ? 
+                AND shift = ?
+                GROUP BY hour
+            `;
+            values = [operatorType, current_date, shift];
+        } else {
+            return res.status(400).send('Invalid operator type');
         }
 
-        if(operatorType === 'LineEnd'){
-            for (const hour of hours) {
-                const totalPieceCountQuery2 = `SELECT SUM(pieceCount) as totalPieceCount FROM pieceCount WHERE hour = ? AND operation = ? AND DATE(timestamp) = ? AND shift = ?`;
-                const totalPieceCountValues2 = [hour, operatorType, current_date, shift];
-                const result2 = await queryPromise(totalPieceCountQuery2, totalPieceCountValues2);
-    
-                if (result2.length > 0) {
-                    totalPieceCountByHour[hour] = result2[0].totalPieceCount;
-                } else {
-                    totalPieceCountByHour[hour] = 0;
-                }
-            }
-    
+        const result = await queryPromise(query, values);
+
+        const totalPieceCountByHour = {};
+        for (let i = 1; i <= 11; i++) {
+            totalPieceCountByHour[i] = 0; // Initialize with 0
         }
 
+        result.forEach(row => {
+            totalPieceCountByHour[row.hour] = row.totalPieceCount;
+        });
 
-        // Respond with success and the total piece count for each hour
-        res.status(200).json({ message: 'Total Line end piece count retrieved successfully.', totalPieceCountByHour });
+        res.status(200).json({ message: 'Total piece count retrieved successfully.', totalPieceCountByHour });
     } catch (error) {
         console.error(error);
         res.status(500).send('Error retrieving total piece count');

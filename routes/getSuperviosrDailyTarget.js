@@ -8,7 +8,6 @@ router.post('/getSupervisorDailyTarget', async (req, res) => {
     try {
         
         const decodedUsername = base64.decode(req.body.username);
-
         const userQuery = "SELECT userid FROM User WHERE username = ?";
         const userValues = [decodedUsername];
         const userResult = await queryPromise(userQuery, userValues);
@@ -34,6 +33,7 @@ router.post('/getSupervisorDailyTarget', async (req, res) => {
         }
         const lineNumber = lineNoResult[0].lineNo;
 
+        console.log(lineNumber)
         // Retrieve sales orders, line items, and quantities for the current date
         const dailyPlanQuery = `
             SELECT dailyTarget, style
