@@ -17,7 +17,7 @@ router.post('/insertOperatorWeek', async(req, res) => {
     });
 
     const sql = `
-    INSERT INTO dailyPlan (date, sbu, lineNo, plantName,userid, Shift, operation, supervisor, smv)
+    INSERT INTO operatorDailyAssignment (date, sbu, lineNo, plantName,userid, Shift, operation, supervisor, smv)
     VALUES ${data.map(row => '(?, ?, ?, ?, ?, ?, ?, ?, ?)').join(',')}
 `;
 
