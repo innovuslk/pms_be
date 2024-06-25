@@ -31,27 +31,36 @@ router.post('/deleteUser', async (req, res) => {
     const { userId } = req.body;
 
     try {
-        // Delete records from operatordailyassignment table that reference the user
-        const deleteAssignmentQuery = "DELETE FROM operatordailyassignment WHERE userid = ?";
-        connection.query(deleteAssignmentQuery, [userId], (err, result) => {
+        // Delete records from pieceCount table that reference the user
+        const deletePieceCountQuery = "DELETE FROM pieceCount WHERE userid = ?";
+        connection.query(deletePieceCountQuery, [userId], (err, result) => {
             if (err) {
-                console.error('Error deleting assignment:', err);
+                console.error('Error deleting piece count records:', err);
                 return res.status(500).send('Internal Server Error');
             }
 
-            // Delete the user from the User table
-            const deleteUserQuery = "DELETE FROM User WHERE userid = ?";
-            connection.query(deleteUserQuery, [userId], (err, result) => {
+            // Delete records from operatorDailyAssignment table that reference the user
+            const deleteAssignmentQuery = "DELETE FROM operatorDailyAssignment WHERE userid = ?";
+            connection.query(deleteAssignmentQuery, [userId], (err, result) => {
                 if (err) {
-                    console.error('Error deleting user:', err);
+                    console.error('Error deleting assignment:', err);
                     return res.status(500).send('Internal Server Error');
                 }
 
-                if (result.affectedRows === 0) {
-                    return res.status(404).send('User not found');
-                }
+                // Delete the user from the User table
+                const deleteUserQuery = "DELETE FROM User WHERE userid = ?";
+                connection.query(deleteUserQuery, [userId], (err, result) => {
+                    if (err) {
+                        console.error('Error deleting user:', err);
+                        return res.status(500).send('Internal Server Error');
+                    }
 
-                res.status(200).send('User deleted successfully');
+                    if (result.affectedRows === 0) {
+                        return res.status(404).send('User not found');
+                    }
+
+                    res.status(200).send('User deleted successfully');
+                });
             });
         });
     } catch (error) {
