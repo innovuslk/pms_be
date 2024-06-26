@@ -33,7 +33,7 @@ router.post('/getSupervisorDailyTarget', async (req, res) => {
         }
         const lineNumber = lineNoResult[0].lineNo;
 
-        console.log(lineNumber)
+        // console.log(lineNumber)
         // Retrieve sales orders, line items, and quantities for the current date
         const dailyPlanQuery = `
             SELECT dailyTarget, style

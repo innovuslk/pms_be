@@ -62,7 +62,7 @@ router.post('/getSvLineNo', async (req, res) => {
             return {
                 lineNo: lineNo,
                 pieceCount: pieceCountData ? pieceCountData.totalPieceCount : 0,
-                latestHour: pieceCountData.latestHour
+                latestHour: pieceCountData ? pieceCountData.latestHour : null
             };
         });
 
