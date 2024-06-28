@@ -27,16 +27,26 @@ router.post('/getSvLineNo', async (req, res) => {
 
         // Fetch all columns' data from downtime table where startTime is today's date
         const query = `
-            SELECT lineNo
-            FROM operatorDailyAssignment
-            WHERE supervisor = ? AND date = ? AND plantName = ?;
+            SELECT 
+                o.lineNo, 
+                dp.style 
+            FROM 
+                operatorDailyAssignment o
+            JOIN 
+                dailyPlan dp ON o.lineNo = dp.lineNo AND o.date = dp.date AND o.plantName = dp.plantName
+            WHERE 
+                o.supervisor = ? 
+                AND o.date = ? 
+                AND o.plantName = ?;
         `;
         const values = [userId, current_date, plantName];
         const result = await queryPromise(query, values);
 
         const uniqueLineNosSet = new Set();
+        const lineStyles = {};
         result.forEach(row => {
             uniqueLineNosSet.add(row.lineNo);
+            lineStyles[row.lineNo] = row.style;
         });
 
         const uniqueLineNos = [...uniqueLineNosSet];
@@ -47,14 +57,19 @@ router.post('/getSvLineNo', async (req, res) => {
 
         // Get the piece counts for each unique line number
         const pieceCountQuery = `
-            SELECT lineNo, MAX(hour) as latestHour, SUM(pieceCount) AS totalPieceCount
-            FROM pieceCount
-            WHERE operation = 'LineEnd'
-            AND DATE(timestamp) = ?
-            AND lineNo IN (?)
-            GROUP BY lineNo;
+            SELECT p.lineNo, p.latestHour, p.totalPieceCount, pc.salesOrder
+            FROM (
+                SELECT lineNo, MAX(hour) as latestHour, SUM(pieceCount) AS totalPieceCount
+                FROM pieceCount
+                WHERE operation = 'LineEnd'
+                AND DATE(timestamp) = ?
+                AND lineNo IN (?)
+                GROUP BY lineNo
+            ) p
+            JOIN pieceCount pc ON p.lineNo = pc.lineNo AND p.latestHour = pc.hour
+            WHERE DATE(pc.timestamp) = ? AND pc.operation = 'LineEnd'
         `;
-        const pieceCountValues = [current_date, uniqueLineNos];
+        const pieceCountValues = [current_date, uniqueLineNos, current_date];
         const pieceCountResult = await queryPromise(pieceCountQuery, pieceCountValues);
 
         const linePieceCounts = uniqueLineNos.map(lineNo => {
@@ -62,7 +77,9 @@ router.post('/getSvLineNo', async (req, res) => {
             return {
                 lineNo: lineNo,
                 pieceCount: pieceCountData ? pieceCountData.totalPieceCount : 0,
-                latestHour: pieceCountData ? pieceCountData.latestHour : null
+                latestHour: pieceCountData ? pieceCountData.latestHour : null,
+                salesOrder: pieceCountData ? pieceCountData.salesOrder : null,
+                style: lineStyles[lineNo] // Add style to the response
             };
         });
 
@@ -72,6 +89,8 @@ router.post('/getSvLineNo', async (req, res) => {
         res.status(500).send('Error retrieving lineNo');
     }
 });
+
+
 
 router.post('/getSvPlant', async (req, res) => {
     try {
