@@ -12,8 +12,8 @@ router.post('/insertWeekPlan', async(req, res) => {
     const values = [];
 
     data.forEach(row => {
-        const { date, sbu, salesOrder, lineItem, lineNo, plantName, dailyTarget, style, shift } = row;
-        values.push([date, sbu, salesOrder, lineItem, lineNo, plantName, dailyTarget, style, shift]);
+        const { date, sbu, SalesOrder, LineItem, lineNo, plantName, dailyTarget, style, shift } = row;
+        values.push([date, sbu, SalesOrder, LineItem, lineNo, plantName, dailyTarget, style, shift]);
     });
 
     const sql = `
