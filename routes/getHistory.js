@@ -23,6 +23,14 @@ router.post('/getHistory', (req, res) => {
             GROUP BY DATE(timestamp), plantName
             ORDER BY DATE(timestamp), plantName;
         `;
+    } else if (sortBy === 'lineNo') {
+        query = `
+            SELECT DATE(timestamp) as date, lineNo, SUM(pieceCount) as pieceCount
+            FROM pieceCount
+            WHERE DATE(timestamp) BETWEEN ? AND ?
+            GROUP BY DATE(timestamp), lineNo
+            ORDER BY DATE(timestamp), lineNo;
+        `;
     } else {
         query = `
             SELECT DATE(timestamp) as date, SUM(pieceCount) as pieceCount
