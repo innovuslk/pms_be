@@ -9,16 +9,17 @@ router.post('/insertStyleData', async(req, res) => {
         Base,
         StyleNo,
         Size,
-        StitchCount
+        StitchCount,
+        Operation
     } = req.body;
 
 
     const sql = `
-        INSERT INTO style (base_style, style_number, size, stitchCount)
-        VALUES (?, ?, ?, ?)
+        INSERT INTO style (base_style, style_number, size, stitchCount, operation)
+        VALUES (?, ?, ?, ?, ?)
     `;
 
-    const values = [Base, StyleNo, Size, StitchCount];
+    const values = [Base, StyleNo, Size, StitchCount, Operation];
 
     connection.query(sql, values, (err, result) => {
         if (err) {
