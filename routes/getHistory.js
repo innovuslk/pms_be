@@ -4,9 +4,11 @@ const connection = require('../database/connect');
 const router = express.Router();
 
 router.post('/getHistory', (req, res) => {
-    const { startDate, endDate, sortBy } = req.body;
+    const { startDate, endDate, sortBy, lineNo } = req.body;
 
     let query;
+    let queryParams = [startDate, endDate];
+
     if (sortBy === 'operation') {
         query = `
             SELECT DATE(timestamp) as date, operation, SUM(pieceCount) as pieceCount
@@ -25,12 +27,13 @@ router.post('/getHistory', (req, res) => {
         `;
     } else if (sortBy === 'lineNo') {
         query = `
-            SELECT DATE(timestamp) as date, lineNo, SUM(pieceCount) as pieceCount
+            SELECT DATE(timestamp) as date, lineNo, operation, SUM(pieceCount) as pieceCount
             FROM pieceCount
-            WHERE DATE(timestamp) BETWEEN ? AND ?
-            GROUP BY DATE(timestamp), lineNo
-            ORDER BY DATE(timestamp), lineNo;
+            WHERE DATE(timestamp) BETWEEN ? AND ? AND lineNo LIKE ?
+            GROUP BY DATE(timestamp), lineNo, operation
+            ORDER BY DATE(timestamp), lineNo, operation;
         `;
+        queryParams.push(`${lineNo}%`);
     } else {
         query = `
             SELECT DATE(timestamp) as date, SUM(pieceCount) as pieceCount
@@ -41,7 +44,7 @@ router.post('/getHistory', (req, res) => {
         `;
     }
 
-    connection.query(query, [startDate, endDate], (err, results) => {
+    connection.query(query, queryParams, (err, results) => {
         if (err) {
             return res.status(500).send(err);
         }
