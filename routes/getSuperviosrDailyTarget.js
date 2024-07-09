@@ -6,9 +6,9 @@ const router = express.Router();
 
 router.post('/getSupervisorDailyTarget', async (req, res) => {
     try {
-        
+
         const decodedUsername = base64.decode(req.body.username);
-        const userQuery = "SELECT userid FROM User WHERE username = ?";
+        const userQuery = "SELECT userid, userlevelId FROM User WHERE username = ?";
         const userValues = [decodedUsername];
         const userResult = await queryPromise(userQuery, userValues);
 
@@ -17,6 +17,7 @@ router.post('/getSupervisorDailyTarget', async (req, res) => {
         }
 
         const userId = userResult[0].userid;
+        const userLevelId = userResult[0].userlevelId;
 
         let date_time = new Date();
         let month = ("0" + (date_time.getMonth() + 1)).slice(-2);
@@ -24,9 +25,26 @@ router.post('/getSupervisorDailyTarget', async (req, res) => {
         let date = ("0" + date_time.getDate()).slice(-2);
         let current_date = `${year}-${month}-${date} `;
 
-        const lineNoQuery = "SELECT lineNo from operatorDailyAssignment WHERE supervisor = ? AND date = ?";
-        const lineNoValues = [userId, current_date]
-        const lineNoResult = await queryPromise(lineNoQuery, lineNoValues);
+        let query;
+        let values;
+
+        if (userLevelId === 1) {
+            // Admin: Fetch plant names from dailyPlan table
+            query = `
+                SELECT DISTINCT lineNo
+                FROM dailyPlan
+                WHERE date = ?;
+            `;
+            values = [current_date];
+        } else {
+            // Non-admin: Fetch plant names from operatorDailyAssignment table
+            query = `
+                SELECT lineNo from operatorDailyAssignment WHERE supervisor = ? AND date = ?;
+            `;
+            values = [userId, current_date];
+        }
+
+        const lineNoResult = await queryPromise(query, values);
 
         if (!lineNoResult.length) {
             return res.status(404).send("Line number not assigned for today");
@@ -52,7 +70,7 @@ router.post('/getSupervisorDailyTarget', async (req, res) => {
             const dailyTarget = dailyPlanResult[0].dailyTarget;
             const style = dailyPlanResult[0].style;
             // Respond with success and the total piece count
-            res.status(200).json({ message: 'dailyTarget recieved successfully.', dailyTarget: dailyTarget});
+            res.status(200).json({ message: 'dailyTarget recieved successfully.', dailyTarget: dailyTarget });
         } else {
             res.status(500).json({ message: 'No dailyTarget recieved.', dailyTarget: 0 });
         }
