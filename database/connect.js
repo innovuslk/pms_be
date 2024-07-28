@@ -125,6 +125,10 @@ connection.connect((err) => {
             `CREATE TABLE IF NOT EXISTS lineNumbers (
                 id INT AUTO_INCREMENT PRIMARY KEY,
                 lineNumber VARCHAR(50) NOT NULL
+            );`,
+            `CREATE TABLE IF NOT EXISTS operators (
+                id INT AUTO_INCREMENT PRIMARY KEY,
+                type VARCHAR(50) NOT NULL
             );`
         ];
 
