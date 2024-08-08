@@ -14,15 +14,16 @@ router.post('/insertDailyPlan', async (req, res) => {
         PlantName,
         DailyTarget,
         style,
-        shift
+        shift,
+        plannedTarget
     } = req.body;
 
     const sql = `
-        INSERT INTO dailyPlan (date, sbu, salesOrder, lineItem, lineNo, plantName, dailyTarget, style, shift)
+        INSERT INTO dailyPlan (date, sbu, salesOrder, lineItem, lineNo, plantName, dailyTarget, style, shift, plannedTarget)
         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
     `;
 
-    const values = [Date, Sbu, SalesOrder, LineItem, LineNo, PlantName, DailyTarget, style, shift];
+    const values = [Date, Sbu, SalesOrder, LineItem, LineNo, PlantName, DailyTarget, style, shift, plannedTarget];
 
     connection.query(sql, values, (err, result) => {
         if (err) {
@@ -61,16 +62,17 @@ router.put('/updateDailyPlan/:id', (req, res) => {
         PlantName,
         DailyTarget,
         style,
-        shift
+        shift,
+        plannedTarget
     } = req.body;
 
     const sql = `
         UPDATE dailyPlan
-        SET date = ?, sbu = ?, salesOrder = ?, lineItem = ?, lineNo = ?, plantName = ?, dailyTarget = ?, style = ?, shift = ?
+        SET date = ?, sbu = ?, salesOrder = ?, lineItem = ?, lineNo = ?, plantName = ?, dailyTarget = ?, style = ?, shift = ?, plannedTarget = ?
         WHERE id = ?
     `;
 
-    const values = [Date, Sbu, SalesOrder, LineItem, LineNo, PlantName, DailyTarget, style, shift, id];
+    const values = [Date, Sbu, SalesOrder, LineItem, LineNo, PlantName, DailyTarget, style, shift, plannedTarget, id];
 
     connection.query(sql, values, (err, result) => {
         if (err) {

@@ -7,6 +7,7 @@ const router = express.Router();
 
 router.post('/setPieceCount', async (req, res) => {
     try {
+        // console.log(req.body)
         const decodedUsername = base64.decode(req.body.username);
         const pieceCount = Number(req.body.pieceCount);
         const hour = req.body.hour;
