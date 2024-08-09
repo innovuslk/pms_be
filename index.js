@@ -37,6 +37,7 @@ const OperatorWeekUpload = require('./routes/OperatorWeekUpload')
 const getTopUsersWithCycle = require('./routes/getTopUsersWithCycle')
 const getHistory = require('./routes/getHistory')
 const getLineNumbers = require('./routes/getLineNumbers')
+const getPlannedTarget = require('./routes/getPlannedTarget')
 
 const app = express();
 
@@ -80,6 +81,7 @@ app.use('/insert',OperatorWeekUpload);
 app.use('/get',getTopUsersWithCycle);
 app.use('/get',getHistory);
 app.use('/get', getLineNumbers)
+app.use('/get',getPlannedTarget)
 
 const port = process.env.PORT;
 app.listen(port, () => {
