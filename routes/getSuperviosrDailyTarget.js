@@ -57,7 +57,7 @@ router.post('/getSupervisorDailyTarget', async (req, res) => {
         for (const line of lineNoResult) {
             const lineNumber = line.lineNo;
             const dailyPlanQuery = `
-                SELECT dailyTarget, style
+                SELECT dailyTarget, style, plantName
                 FROM dailyPlan
                 WHERE date = ? AND lineNo = ?;
             `;
@@ -68,7 +68,8 @@ router.post('/getSupervisorDailyTarget', async (req, res) => {
                 dailyTargets.push({
                     lineNo: lineNumber,
                     dailyTarget: dailyPlanResult[0].dailyTarget,
-                    style: dailyPlanResult[0].style
+                    style: dailyPlanResult[0].style,
+                    plantName: dailyPlanResult[0].plantName
                 });
             }
         }
