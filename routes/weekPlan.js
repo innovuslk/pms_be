@@ -12,13 +12,13 @@ router.post('/insertWeekPlan', async(req, res) => {
     const values = [];
 
     data.forEach(row => {
-        const { date, sbu, SalesOrder, LineItem, lineNo, plantName, dailyTarget, style, shift } = row;
-        values.push([date, sbu, SalesOrder, LineItem, lineNo, plantName, dailyTarget, style, shift]);
+        const { date, sbu, SalesOrder, LineItem, lineNo, plantName, dailyTarget, style, shift, plannedTarget } = row;
+        values.push([date, sbu, SalesOrder, LineItem, lineNo, plantName, dailyTarget, style, shift, plannedTarget]);
     });
 
     const sql = `
-    INSERT INTO dailyPlan (date, sbu, salesOrder, lineItem, lineNo, plantName, dailyTarget, style, shift)
-    VALUES ${data.map(row => '(?, ?, ?, ?, ?, ?, ?, ?, ?)').join(',')}
+    INSERT INTO dailyPlan (date, sbu, salesOrder, lineItem, lineNo, plantName, dailyTarget, style, shift, plannedTarget)
+    VALUES ${data.map(row => '(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)').join(',')}
 `;
 
 connection.query(sql, values.flat(), (err, result) => {
