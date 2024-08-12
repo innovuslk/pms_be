@@ -20,7 +20,6 @@ router.post('/insertOperatorWeek', async (req, res) => {
 
         // Create a map of usernames to userids
         const usernameToUserIdMap = {};
-        console.log(results)
         results.forEach(row => {
             usernameToUserIdMap[row.username] = row.userid;
         });

@@ -25,7 +25,6 @@ router.post('/getAllOperators', async (req, res) => {
                 }
             });
         });
-        console.log(assignmentResult)
 
         if (assignmentResult.length === 0) {
             return res.status(404).send('No assignments found for today');
