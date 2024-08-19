@@ -11,7 +11,6 @@ router.get('/getTopUsersWithCycle', async (req, res) => {
         let date = ("0" + date_time.getDate()).slice(-2);
         let current_date = `${year}-${month}-${date}`;
 
-        console.log(`Current Date: ${current_date}`);
 
         const topUsersQuery = `
             SELECT t1.userid, t1.username, t1.totalPieceCount, t1.shift, t1.plantName, t1.lineItem, t1.currentHourOutput, t1.latestHour, t1.operation
