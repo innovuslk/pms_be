@@ -38,6 +38,7 @@ const getTopUsersWithCycle = require('./routes/getTopUsersWithCycle')
 const getHistory = require('./routes/getHistory')
 const getLineNumbers = require('./routes/getLineNumbers')
 const getPlannedTarget = require('./routes/getPlannedTarget')
+const getPlantStyles = require('./routes/getPlantStyles')
 
 const app = express();
 
@@ -82,6 +83,7 @@ app.use('/get',getTopUsersWithCycle);
 app.use('/get',getHistory);
 app.use('/get', getLineNumbers)
 app.use('/get',getPlannedTarget)
+app.use('/get',getPlantStyles)
 
 const port = process.env.PORT;
 app.listen(port, () => {
