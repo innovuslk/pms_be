@@ -42,6 +42,7 @@ const getPlantStyles = require('./routes/getPlantStyles')
 const getPlantStyles2 = require('./routes/getPlantStyles2')
 const getStylesData = require('./routes/getStylesData')
 const getDailyTargetByLine = require('./routes/getDailyTargetOfLine')
+const getAllPlantDetails = require('./routes/getAllPlantDetails')
 
 
 const app = express();
@@ -91,6 +92,7 @@ app.use('/get',getPlantStyles)
 app.use('/get',getPlantStyles2)
 app.use('/get',getStylesData)
 app.use('/get',getDailyTargetByLine)
+app.use('/get',getAllPlantDetails)
 
 const port = process.env.PORT;
 app.listen(port, () => {
