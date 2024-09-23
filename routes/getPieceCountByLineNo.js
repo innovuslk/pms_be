@@ -14,7 +14,7 @@ router.post('/getPieceCountByLine', async (req, res) => {
         let current_date = `${year}-${month}-${date} `;
 
         // Get the sum of piece counts for the user
-        const totalPieceCountQuery = "SELECT SUM(pieceCount) as totalPieceCount, MAX(hour) as latestHour FROM pieceCount WHERE operation = 'LineEnd' AND lineNo = ? AND DATE(timestamp) = ?";
+        const totalPieceCountQuery = "SELECT SUM(pieceCount) as totalPieceCount, MAX(hour) as latestHour FROM pieceCount WHERE lineNo = ? AND DATE(timestamp) = ?";
         const totalPieceCountValues = [lineNo , current_date];
         const totalPieceCountResult = await queryPromise(totalPieceCountQuery, totalPieceCountValues);
 

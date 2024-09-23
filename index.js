@@ -39,6 +39,10 @@ const getHistory = require('./routes/getHistory')
 const getLineNumbers = require('./routes/getLineNumbers')
 const getPlannedTarget = require('./routes/getPlannedTarget')
 const getPlantStyles = require('./routes/getPlantStyles')
+const getPlantStyles2 = require('./routes/getPlantStyles2')
+const getStylesData = require('./routes/getStylesData')
+const getDailyTargetByLine = require('./routes/getDailyTargetOfLine')
+
 
 const app = express();
 
@@ -84,6 +88,9 @@ app.use('/get',getHistory);
 app.use('/get', getLineNumbers)
 app.use('/get',getPlannedTarget)
 app.use('/get',getPlantStyles)
+app.use('/get',getPlantStyles2)
+app.use('/get',getStylesData)
+app.use('/get',getDailyTargetByLine)
 
 const port = process.env.PORT;
 app.listen(port, () => {

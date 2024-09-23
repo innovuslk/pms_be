@@ -4,20 +4,18 @@ const router = express.Router();
 
 router.post('/getAllOperators', async (req, res) => {
     try {
+        const { date, style, plant, lineNo } = req.body;
 
-        let date_time = new Date();
-        let month = ("0" + (date_time.getMonth() + 1)).slice(-2);
-        let year = date_time.getFullYear();
-        let date = ("0" + date_time.getDate()).slice(-2);
-        let current_date = `${year}-${month}-${date}`;
-
+        // Step 1: Get user assignments based on the provided date, style, plant, and lineNo
         const assignmentQuery = `
-            SELECT DISTINCT userid 
-            FROM operatorDailyAssignment 
-            WHERE date = ?`;
-        
+            SELECT DISTINCT oda.userid, oda.shift
+            FROM operatorDailyAssignment oda
+            JOIN dailyPlan ls ON oda.lineNo = ls.lineNo
+            WHERE oda.date = ? AND ls.style = ? AND ls.plantName = ? AND oda.lineNo = ?
+        `;
+
         const assignmentResult = await new Promise((resolve, reject) => {
-            connection.query(assignmentQuery, [current_date], (err, data) => {
+            connection.query(assignmentQuery, [date, style, plant, lineNo], (err, data) => {
                 if (err) {
                     reject(err);
                 } else {
@@ -27,17 +25,19 @@ router.post('/getAllOperators', async (req, res) => {
         });
 
         if (assignmentResult.length === 0) {
-            return res.status(404).send('No assignments found for today');
+            return res.status(404).send('No assignments found for the provided criteria');
         }
 
-        // Step 2: Extract userIds from the result
+        // Extract userIds and shifts from the result
         const userIds = assignmentResult.map(row => row.userid);
+        const userShifts = assignmentResult.map(row => ({ userid: row.userid, shift: row.shift }));
 
-        // Step 3: Get usernames from User table for the retrieved userIds
+        // Step 2: Get usernames from User table for the retrieved userIds
         const userQuery = `
             SELECT userid, username 
             FROM User 
-            WHERE userid IN (?) `;
+            WHERE userid IN (?) 
+        `;
 
         const userResult = await new Promise((resolve, reject) => {
             connection.query(userQuery, [userIds], (err, data) => {
@@ -49,16 +49,50 @@ router.post('/getAllOperators', async (req, res) => {
             });
         });
 
+        // console.log(userResult)
+
         if (userResult.length === 0) {
             return res.status(404).send('No users found for the given userIds');
         }
 
-        // Step 4: Send the response
-        res.json({ Users: userResult });
+        // Step 3: Get sum of pieceCount from pieceCount table for each user
+        const pieceCountQuery = `
+            SELECT userid, SUM(pieceCount) as totalPieceCount
+            FROM pieceCount
+            WHERE userid IN (?) AND DATE(timestamp) = ?
+            GROUP BY userid
+        `;
+
+        const pieceCountResult = await new Promise((resolve, reject) => {
+            connection.query(pieceCountQuery, [userIds, date], (err, data) => {
+                if (err) {
+                    reject(err);
+                } else {
+                    resolve(data);
+                }
+            });
+        });
+
+        // console.log(pieceCountResult)
+
+        // Step 4: Merge data and create the final response
+        const usersWithPieceCount = userResult.map(user => {
+            const shiftData = userShifts.find(shift => shift.userid === user.userid);
+            const pieceCountData = pieceCountResult.find(pc => pc.userid === user.userid) || { totalPieceCount: 0 };
+
+            return {
+                username: user.username,
+                shift: shiftData ? shiftData.shift : null,
+                totalPieceCount: pieceCountData.totalPieceCount
+            };
+        });
+
+        // Step 5: Send the response
+        res.json({ users: usersWithPieceCount });
 
     } catch (error) {
         console.error(error);
-        res.status(500).send('Error retrieving users');
+        res.status(500).send('Error retrieving operator data');
     }
 });
 
