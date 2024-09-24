@@ -8,7 +8,7 @@ router.post('/getAllOperators', async (req, res) => {
 
         // Step 1: Get user assignments based on the provided date, style, plant, and lineNo
         const assignmentQuery = `
-            SELECT DISTINCT oda.userid, oda.shift
+            SELECT DISTINCT oda.userid, oda.shift, oda.operation
             FROM operatorDailyAssignment oda
             JOIN dailyPlan ls ON oda.lineNo = ls.lineNo
             WHERE oda.date = ? AND ls.style = ? AND ls.plantName = ? AND oda.lineNo = ?
@@ -28,9 +28,13 @@ router.post('/getAllOperators', async (req, res) => {
             return res.status(404).send('No assignments found for the provided criteria');
         }
 
-        // Extract userIds and shifts from the result
+        // Extract userIds, shifts, and operations from the result
         const userIds = assignmentResult.map(row => row.userid);
-        const userShifts = assignmentResult.map(row => ({ userid: row.userid, shift: row.shift }));
+        const userShifts = assignmentResult.map(row => ({
+            userid: row.userid,
+            shift: row.shift,
+            operation: row.operation
+        }));
 
         // Step 2: Get usernames from User table for the retrieved userIds
         const userQuery = `
@@ -48,8 +52,6 @@ router.post('/getAllOperators', async (req, res) => {
                 }
             });
         });
-
-        // console.log(userResult)
 
         if (userResult.length === 0) {
             return res.status(404).send('No users found for the given userIds');
@@ -73,8 +75,6 @@ router.post('/getAllOperators', async (req, res) => {
             });
         });
 
-        // console.log(pieceCountResult)
-
         // Step 4: Merge data and create the final response
         const usersWithPieceCount = userResult.map(user => {
             const shiftData = userShifts.find(shift => shift.userid === user.userid);
@@ -83,6 +83,7 @@ router.post('/getAllOperators', async (req, res) => {
             return {
                 username: user.username,
                 shift: shiftData ? shiftData.shift : null,
+                operation: shiftData ? shiftData.operation : null, // Include the operation
                 totalPieceCount: pieceCountData.totalPieceCount
             };
         });
