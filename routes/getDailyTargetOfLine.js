@@ -10,14 +10,15 @@ router.post('/getDailyTargetByLine', async (req, res) => {
         const date = req.body.date
 
         // Get the sum of piece counts for the user
-        const smv = "SELECT dailyTarget FROM dailyPlan WHERE lineNo = ? AND date = ?";
+        const smv = "SELECT dailyTarget, plannedTarget FROM dailyPlan WHERE lineNo = ? AND date = ?";
         const smvValues = [lineNo, date];
         const smvResults = await queryPromise(smv, smvValues);
 
         if (smvResults.length > 0) {
             const dailyTarget = smvResults[0].dailyTarget;
+            const plannedTarget = smvResults[0].plannedTarget;
             // Respond with success and the total piece count
-            res.status(200).json({ message: 'smv recieved successfully.', dailyTarget: dailyTarget });
+            res.status(200).json({ message: 'smv recieved successfully.', dailyTarget: dailyTarget, plannedTarget: plannedTarget });
         } else {
             res.status(200).json({ message: 'No smv recieved.', smv: 0 });
         }
