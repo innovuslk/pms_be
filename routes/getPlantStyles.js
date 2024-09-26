@@ -18,7 +18,7 @@ router.post('/getPlantStyles', async (req, res) => {
         for (const style of plantStylesResult) {
             const styleName = style.style;
 
-            // Query to get lineNumbers for the current style
+            // Query to get distinct lineNumbers for the current style
             const lineNumbersQuery = "SELECT DISTINCT lineNo FROM dailyPlan WHERE style = ? AND plantName = ?";
             const lineNumbersValues = [styleName, plant];
             const lineNumbersResult = await queryPromise(lineNumbersQuery, lineNumbersValues);
@@ -28,19 +28,33 @@ router.post('/getPlantStyles', async (req, res) => {
             for (const line of lineNumbersResult) {
                 const lineNo = line.lineNo;
 
+                // Query to get pieceCount for the current lineNo
                 const pieceCountQuery = `
-                    SELECT SUM(pieceCount) AS linePieceCount 
+                    SELECT SUM(pieceCount) AS linePieceCount, MAX(hour) as latestHour  
                     FROM pieceCount 
                     WHERE lineNo = ? AND DATE(timestamp) = ? AND plantName = ?`;
                 const pieceCountValues = [lineNo, date, plant];
                 const pieceCountResult = await queryPromise(pieceCountQuery, pieceCountValues);
 
                 const linePieceCount = pieceCountResult[0]?.linePieceCount || 0;
+                const latestHour = pieceCountResult[0]?.latestHour || 0;
 
-                // Push lineNumber and pieceCount into lineData array
+                // Query to get the dailyTarget for the current lineNo from dailyPlan table
+                const dailyTargetQuery = `
+                    SELECT dailyTarget 
+                    FROM dailyPlan 
+                    WHERE lineNo = ? AND plantName = ? AND style = ? AND date = ? LIMIT 1`;
+                const dailyTargetValues = [lineNo, plant, styleName, date];
+                const dailyTargetResult = await queryPromise(dailyTargetQuery, dailyTargetValues);
+
+                const dailyTarget = dailyTargetResult[0]?.dailyTarget || 0;
+
+                // Push lineNumber, pieceCount, and dailyTarget into lineData array
                 lineData.push({
                     lineNumber: lineNo,
-                    pieceCount: linePieceCount
+                    pieceCount: linePieceCount,
+                    dailyTarget: dailyTarget, // Include dailyTarget in the response
+                    latestHour: latestHour 
                 });
             }
 
@@ -50,7 +64,7 @@ router.post('/getPlantStyles', async (req, res) => {
             // Prepare the response for the current style
             result.push({
                 style: styleName,
-                lineData, // All line numbers and their respective piece counts
+                lineData, // All line numbers, piece counts, and daily targets
                 totalPieceCount // Sum of piece counts for all line numbers
             });
         }
