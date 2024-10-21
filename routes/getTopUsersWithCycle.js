@@ -24,7 +24,7 @@ router.get('/getTopUsersWithCycle', async (req, res) => {
         `;
         const topUsersResult = await queryPromise(topUsersQuery, [current_date]);
 
-        console.log(`Top Users Result: ${JSON.stringify(topUsersResult)}`);
+        // console.log(`Top Users Result: ${JSON.stringify(topUsersResult)}`);
 
         if (topUsersResult.length === 0) {
             return res.status(200).json({ message: 'No top users found for the current date.', topUsers: [] });
