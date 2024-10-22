@@ -26,13 +26,13 @@ router.post('/getAllPlantDetails', async (req, res) => {
             const plantStylesQuery = "SELECT DISTINCT style FROM dailyPlan WHERE date = ? AND plantName = ?";
             const plantStylesResult = await queryPromise(plantStylesQuery, [queryDate, plantName]);
 
-            // Iterate over each style to get line numbers and piece counts specific to the style
+            // Iterate over each style to get line numbers and piece counts
             for (const style of plantStylesResult) {
                 const styleName = style.style;
 
                 // Query to get distinct line numbers for the current style and plant
-                const lineNumbersQuery = "SELECT DISTINCT lineNo FROM dailyPlan WHERE style = ? AND plantName = ? AND date = ?";
-                const lineNumbersResult = await queryPromise(lineNumbersQuery, [styleName, plantName, queryDate]);
+                const lineNumbersQuery = "SELECT DISTINCT lineNo FROM dailyPlan WHERE style = ? AND plantName = ?";
+                const lineNumbersResult = await queryPromise(lineNumbersQuery, [styleName, plantName]);
 
                 const lineData = [];
 
@@ -40,7 +40,7 @@ router.post('/getAllPlantDetails', async (req, res) => {
                 for (const line of lineNumbersResult) {
                     const lineNo = line.lineNo;
 
-                    // Query to get pieceCount for the current lineNo and plant from pieceCount table
+                    // Query to get pieceCount for the current lineNo
                     const pieceCountQuery = `
                         SELECT SUM(pieceCount) AS linePieceCount, MAX(hour) as latestHour 
                         FROM pieceCount 
@@ -50,7 +50,7 @@ router.post('/getAllPlantDetails', async (req, res) => {
                     const linePieceCount = pieceCountResult[0]?.linePieceCount || 0;
                     const latestHour = pieceCountResult[0]?.latestHour || 0;
 
-                    // Query to get the dailyTarget for the current lineNo and plant from dailyPlan table
+                    // Query to get the dailyTarget for the current lineNo from dailyPlan table
                     const dailyTargetQuery = `
                         SELECT dailyTarget 
                         FROM dailyPlan 
@@ -64,19 +64,19 @@ router.post('/getAllPlantDetails', async (req, res) => {
                         lineNumber: lineNo,
                         pieceCount: linePieceCount,
                         dailyTarget: dailyTarget,
-                        latestHour: latestHour // Include latest hour in the response
+                        latestHour: latestHour // Include dailyTarget in the response
                     });
                 }
 
                 // Sum the piece counts across all line numbers for the current style
                 const totalPieceCount = lineData.reduce((acc, line) => acc + line.pieceCount, 0);
 
-                // Push the final data into the result array
+                // Push the final data directly into the result array
                 result.push({
                     plantName,
                     style: styleName,
                     lineData, // Line numbers, piece counts, and daily targets
-                    totalPieceCount // Sum of piece counts for all line numbers in the style
+                    totalPieceCount // Sum of piece counts for all line numbers
                 });
             }
         }

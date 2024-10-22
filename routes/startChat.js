@@ -4,7 +4,7 @@ const connection = require('../database/connect');
 const { WebPubSubEventHandler } = require('@azure/web-pubsub-express');
 
 const router = express.Router();
-const connectionString = process.env.connection_string;
+const connectionString = 'Endpoint=https://pms-chat.webpubsub.azure.com;AccessKey=CCSh7lChRl/3/El9lcWenImYKCrtEK5wpUeo2UdEM4g=;Version=1.0;';
 const hubName = 'PMS_CHAT';
 const webPubSubServiceClient = new WebPubSubServiceClient(connectionString, hubName);
 
