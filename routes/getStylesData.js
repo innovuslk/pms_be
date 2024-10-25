@@ -19,6 +19,7 @@ router.post('/getStylesData', async (req, res) => {
     FROM pieceCount 
     WHERE lineNo = ? 
       AND DATE(timestamp) = ? 
+      AND operation = 'LineEnd'
       AND plantName = ?`;
         const pieceCountValues = [lineNo, date, plant, lineNo, date, plant];
         const pieceCountResult = await queryPromise(pieceCountQuery, pieceCountValues);
