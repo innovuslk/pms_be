@@ -4,7 +4,7 @@ const connection = require('../database/connect');
 const router = express.Router();
 
 router.post('/getHistory', (req, res) => {
-    const { startDate, endDate, sortBy, lineNo } = req.body;
+    const { startDate, endDate, sortBy, lineNo, style } = req.body;
 
     let query;
     let queryParams = [startDate, endDate];
@@ -19,13 +19,22 @@ router.post('/getHistory', (req, res) => {
         `;
     } else if (sortBy === 'plantName') {
         query = `
-            SELECT DATE(timestamp) as date, plantName, SUM(pieceCount) as pieceCount
-            FROM pieceCount
-            WHERE DATE(timestamp) BETWEEN ? AND ?
-            GROUP BY DATE(timestamp), plantName
-            ORDER BY DATE(timestamp), plantName;
-        `;
-    } else if (sortBy === 'lineNo') {
+        SELECT DATE(pc.timestamp) AS date, pc.plantName, dp.style, SUM(pc.pieceCount) AS pieceCount
+        FROM pieceCount AS pc
+        JOIN dailyPlan AS dp
+        ON pc.plantName = dp.plantName
+        AND pc.lineItem = dp.lineItem
+        AND DATE(pc.timestamp) = dp.date
+        WHERE DATE(pc.timestamp) BETWEEN ? AND ?
+        ${style ? 'AND dp.style = ?' : ''}
+        GROUP BY DATE(pc.timestamp), pc.plantName, dp.style
+        ORDER BY DATE(pc.timestamp), pc.plantName, dp.style;
+    `;
+
+    queryParams.push(style);
+
+    }
+    else if (sortBy === 'lineNo') {
         query = `
             SELECT DATE(timestamp) as date, lineNo, operation, SUM(pieceCount) as pieceCount
             FROM pieceCount
