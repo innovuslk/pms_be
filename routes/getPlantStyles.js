@@ -32,7 +32,7 @@ router.post('/getPlantStyles', async (req, res) => {
                 const pieceCountQuery = `
                     SELECT SUM(pieceCount) AS linePieceCount, MAX(hour) AS latestHour 
                     FROM pieceCount 
-                    WHERE lineNo = ? AND DATE(timestamp) = ? AND plantName = ?`;
+                    WHERE lineNo = ? AND DATE(timestamp) = ? AND plantName = ? AND operation = 'LineEnd'`;
                 const pieceCountResult = await queryPromise(pieceCountQuery, [lineNo, queryDate, plant]);
 
                 const linePieceCount = pieceCountResult[0]?.linePieceCount || 0;
